@@ -1,0 +1,2800 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#176b4a">
+<title>Canteen Order Hub Mplace</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --g:#17895c;
+  --g2:#0fae72;
+  --gd:#0e5c3f;
+  --light:#e6f6ee;
+  --bg:#f4f8f6;
+  --white:#fff;
+  --text:#152922;
+  --muted:#71807a;
+  --line:#e6ede9;
+  --red:#e5484d;
+  --amber:#f5a524;
+  --shadow:0 10px 30px rgba(14,60,42,.09);
+  --shadow-sm:0 4px 14px rgba(14,60,42,.07);
+  --shadow-lg:0 20px 50px rgba(10,45,32,.16);
+  --radius:18px;
+  --radius-sm:12px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --fast:.18s var(--ease);
+  --med:.32s var(--ease);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+body{
+  margin:0;
+  font-family:'Inter',Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(900px 480px at 100% -10%, #e4f6ec 0%, transparent 60%),
+    radial-gradient(700px 420px at -10% 0%, #eef9f1 0%, transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  animation:bodyIn .5s var(--ease);
+}
+@keyframes bodyIn{from{opacity:0}to{opacity:1}}
+h1,h2,h3,.brand span{font-family:'Poppins',Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;font-family:inherit}
+button:disabled{opacity:.55;cursor:not-allowed}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.container{width:min(1150px,94%);margin:auto}
+::selection{background:var(--light);color:var(--gd)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#cfe3d7;border-radius:20px}
+::-webkit-scrollbar-thumb:hover{background:#b7d5c4}
+header{
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px) saturate(160%);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 1px 0 rgba(20,60,45,.06), 0 10px 25px rgba(20,60,45,.04);
+}
+.header-inner{
+  min-height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  color:var(--g);
+  font-size:19px;
+}
+.brand-mark{
+  width:39px;height:39px;
+  border-radius:12px;
+  background:linear-gradient(145deg,var(--g2),var(--gd));
+  color:white;
+  display:grid;
+  place-items:center;
+  font-size:18px;
+  box-shadow:0 6px 16px rgba(14,92,63,.35);
+  transition:transform var(--fast);
+}
+.brand:hover .brand-mark{transform:rotate(-6deg) scale(1.05)}
+nav{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+nav button{
+  position:relative;
+  border:0;background:transparent;
+  padding:10px 12px;
+  border-radius:10px;
+  color:#526158;
+  font-weight:600;
+  transition:background var(--fast),color var(--fast),transform var(--fast);
+}
+nav button:hover{background:var(--light);color:var(--g);transform:translateY(-1px)}
+nav button.active{
+  background:linear-gradient(135deg,var(--light),#dcf3e6);
+  color:var(--gd);
+}
+nav button.active::after{
+  content:"";
+  position:absolute;left:14px;right:14px;bottom:4px;
+  height:2.5px;border-radius:3px;
+  background:var(--g);
+  animation:navUnderline var(--med);
+}
+@keyframes navUnderline{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+.nav-badge,.badge{
+  background:var(--red);
+  color:white;
+  border-radius:30px;
+  padding:2px 7px;
+  font-size:10px;
+  font-weight:800;
+  margin-left:4px;
+  display:inline-block;
+  animation:badgePop .3s var(--ease);
+}
+@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
+main{min-height:75vh;padding:24px 0 100px}
+main>section:not(.hidden){animation:pageIn var(--med)}
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hero{
+  background:linear-gradient(120deg,#0e5c3f,#1a9c66 55%,#17895c);
+  background-size:180% 180%;
+  animation:heroShift 10s ease infinite;
+  color:white;
+  padding:38px;
+  border-radius:24px;
+  margin-bottom:25px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+@keyframes heroShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+.hero::before{
+  content:"";
+  position:absolute;inset:-40% -10% auto auto;
+  width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);
+  pointer-events:none;
+}
+.hero::after{
+  content:"";
+  position:absolute;left:-60px;bottom:-90px;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.1),transparent 70%);
+  pointer-events:none;
+}
+.hero h1{font-size:clamp(25px,5vw,38px);margin:0 0 10px;letter-spacing:-.02em;position:relative}
+.hero p{max-width:570px;line-height:1.6;margin:0;color:#e0eee6;position:relative}
+.hero-tag{
+  display:inline-block;
+  padding:7px 13px;
+  background:#ffffff22;
+  border:1px solid #ffffff2e;
+  border-radius:20px;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+  margin-bottom:14px;
+  position:relative;
+}
+.section-title{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  gap:12px;margin:24px 0 15px;
+}
+.section-title h2{margin:0;font-size:22px;letter-spacing:-.01em}
+.panel,.card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  transition:box-shadow var(--med);
+}
+.panel{padding:20px}
+.toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;
+  margin:15px 0 20px;
+}
+.field{
+  width:100%;
+  border:1.5px solid #dce5de;
+  background:#fff;
+  border-radius:12px;
+  padding:12px 13px;
+  outline:none;
+  color:var(--text);
+  transition:border-color var(--fast),box-shadow var(--fast),transform var(--fast);
+}
+.field:focus{border-color:var(--g);box-shadow:0 0 0 4px #17895c1c;transform:translateY(-1px)}
+.search{flex:1;min-width:180px}
+select.field{min-width:150px}
+
+.btn{
+  position:relative;
+  overflow:hidden;
+  border:0;border-radius:12px;
+  background:linear-gradient(135deg,var(--g2),var(--g));
+  color:white;
+  padding:12px 18px;font-weight:700;
+  font-size:14px;
+  box-shadow:0 6px 16px rgba(15,110,75,.28);
+  transition:transform var(--fast),box-shadow var(--fast),background var(--fast);
+}
+.btn:hover{background:linear-gradient(135deg,var(--g),var(--gd));transform:translateY(-2px);box-shadow:0 10px 22px rgba(14,92,63,.34)}
+.btn:active{transform:translateY(0) scale(.98);box-shadow:0 4px 10px rgba(14,92,63,.3)}
+.btn::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(255,255,255,.35),transparent 60%);
+  opacity:0;transition:opacity var(--fast);
+}
+.btn:active::after{opacity:1}
+.btn:disabled{transform:none!important;box-shadow:none!important}
+.btn-light{background:var(--light);color:var(--g);box-shadow:none}
+.btn-light:hover{background:#d7ecdf;color:var(--gd);box-shadow:0 4px 10px rgba(14,92,63,.1)}
+.btn-danger{background:#fff0ef;color:#c62828;box-shadow:none}
+.btn-danger:hover{background:#ffe1df;color:#a51e1e;box-shadow:0 4px 10px rgba(198,40,40,.12)}
+.btn-outline{background:white;color:var(--g);border:1.5px solid #cbdcd0;box-shadow:none}
+.btn-outline:hover{background:var(--light);border-color:var(--g)}
+.btn-small{padding:8px 12px;font-size:12px;border-radius:9px}
+.btn.is-loading{color:transparent!important;pointer-events:none}
+.btn.is-loading::before{
+  content:"";position:absolute;top:50%;left:50%;
+  width:16px;height:16px;margin:-8px 0 0 -8px;
+  border:2.5px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+.btn-outline.is-loading::before,.btn-light.is-loading::before{
+  border:2.5px solid rgba(23,137,92,.25);border-top-color:var(--g);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.categories{
+  display:flex;gap:8px;overflow:auto;
+  padding:2px 0 12px;
+}
+.category{
+  border:1.5px solid var(--line);
+  background:white;color:#53635a;
+  border-radius:30px;padding:9px 16px;
+  white-space:nowrap;font-size:13px;font-weight:700;
+  transition:all var(--fast);
+}
+.category:hover{border-color:var(--g2);color:var(--g)}
+.category.active{background:var(--g);color:white;border-color:var(--g);box-shadow:0 5px 14px rgba(23,137,92,.3)}
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+.food-card{
+  overflow:hidden;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow-sm);
+  animation:appear .45s var(--ease) backwards;
+  transition:transform var(--med),box-shadow var(--med);
+}
+.food-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
+.menu-grid .food-card:nth-child(1){animation-delay:.02s}
+.menu-grid .food-card:nth-child(2){animation-delay:.06s}
+.menu-grid .food-card:nth-child(3){animation-delay:.1s}
+.menu-grid .food-card:nth-child(4){animation-delay:.14s}
+.menu-grid .food-card:nth-child(5){animation-delay:.18s}
+.menu-grid .food-card:nth-child(6){animation-delay:.22s}
+.menu-grid .food-card:nth-child(7){animation-delay:.26s}
+.menu-grid .food-card:nth-child(8){animation-delay:.3s}
+@keyframes appear{
+  from{opacity:0;transform:translateY(14px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.food-image{
+  width:100%;height:165px;
+  object-fit:cover;background:#edf2ee;
+  display:block;
+  transition:transform var(--med);
+}
+.food-card:hover .food-image{transform:scale(1.045)}
+.food-content{padding:14px}
+.food-content h3{font-size:16px;margin:0 0 6px}
+.food-content p{font-size:12px;color:var(--muted);margin:0 0 12px}
+.food-bottom{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:8px;
+}
+.price{font-weight:800;color:var(--g)}
+.sold{font-size:11px;color:#c62828;font-weight:700;background:#fff0ef;padding:5px 9px;border-radius:20px}
+.empty{
+  text-align:center;padding:35px 15px;
+  color:var(--muted);
+  animation:appear .35s var(--ease);
+}
+.empty h3{color:var(--text)}
+
+/* skeleton loading state */
+.skeleton-card{
+  background:white;border:1px solid var(--line);
+  border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.skeleton-block{
+  background:linear-gradient(90deg,#edf2ee 25%,#e2ece4 37%,#edf2ee 63%);
+  background-size:400% 100%;
+  animation:shimmer 1.4s ease infinite;
+}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+.skeleton-card .skeleton-block.img{width:100%;height:165px}
+.skeleton-card .sk-body{padding:14px;display:flex;flex-direction:column;gap:9px}
+.skeleton-card .skeleton-block.line{height:12px;border-radius:6px}
+.skeleton-card .skeleton-block.line.w60{width:60%}
+.skeleton-card .skeleton-block.line.w40{width:40%}
+.skeleton-card .skeleton-block.line.w80{width:80%;height:18px;margin-top:4px}
+
+.cart-float{
+  position:fixed;z-index:30;
+  right:18px;bottom:18px;
+  background:linear-gradient(135deg,var(--g2),var(--gd));color:white;
+  border:0;border-radius:40px;
+  padding:15px 22px;
+  box-shadow:0 10px 28px rgba(14,92,63,.4);
+  font-weight:800;
+  transition:transform var(--fast),box-shadow var(--fast);
+}
+.cart-float:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px rgba(14,92,63,.46)}
+.cart-float:active{transform:scale(.96)}
+.cart-count{
+  display:inline-grid;place-items:center;
+  background:white;color:var(--g);
+  border-radius:30px;width:22px;height:22px;
+  margin-left:6px;font-size:12px;
+  transition:transform .25s var(--ease);
+}
+.cart-count.bump{animation:bump .35s var(--ease)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+.cart-row{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 0;border-bottom:1px solid var(--line);
+  animation:appear .3s var(--ease);
+}
+.cart-row img{
+  width:62px;height:62px;object-fit:cover;
+  border-radius:10px;background:#edf2ee;
+}
+.cart-info{flex:1;min-width:0}
+.cart-info strong{display:block;margin-bottom:5px}
+.qty-control{display:flex;align-items:center;gap:8px}
+.qty-control button{
+  width:28px;height:28px;border:0;
+  border-radius:8px;background:var(--light);
+  color:var(--g);font-weight:800;
+  transition:background var(--fast),transform var(--fast);
+}
+.qty-control button:hover{background:#d7ecdf;transform:scale(1.08)}
+.qty-control button:active{transform:scale(.92)}
+.total-row{
+  display:flex;justify-content:space-between;
+  padding:12px 0;font-weight:800;
+  font-size:18px;
+}
+.form-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.form-group{margin-bottom:13px}
+.form-group label{
+  display:block;font-size:13px;
+  font-weight:700;margin-bottom:7px;
+}
+.form-group.full{grid-column:1/-1}
+.status{
+  display:inline-block;padding:5px 10px;
+  border-radius:20px;font-size:11px;
+  font-weight:800;background:#edf2ee;color:#506258;
+  animation:badgePop .25s var(--ease);
+  letter-spacing:.01em;
+}
+.status.Pending{background:#fff4d8;color:#9b6a00}
+.status.Confirmed{background:#e5f0ff;color:#245d9b}
+.status.Preparing{background:#f1e8ff;color:#7441a4}
+.status.Ready{background:#e0f5e8;color:#187344}
+.status.Completed{background:#dff4e6;color:#176b4a}
+.status.Cancelled{background:#ffe6e4;color:#bd302a}
+.order-card{padding:17px;margin-bottom:13px;animation:appear .35s var(--ease) backwards;transition:box-shadow var(--med)}
+.order-card:hover{box-shadow:var(--shadow-lg)}
+.order-head{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:10px;flex-wrap:wrap;
+}
+.order-items{
+  padding:12px 0;border-top:1px solid var(--line);
+  margin-top:12px;font-size:13px;line-height:1.8;
+}
+.tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;
+}
+.tab{
+  padding:10px 16px;border:0;
+  border-radius:11px;background:#edf2ee;
+  color:#526158;font-weight:700;
+  transition:all var(--fast);
+}
+.tab:hover{background:#e0ece4}
+.tab.active{background:linear-gradient(135deg,var(--g2),var(--g));color:white;box-shadow:0 6px 16px rgba(23,137,92,.3)}
+.admin-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:12px;margin-bottom:18px;
+}
+.stat{padding:17px;transition:transform var(--fast),box-shadow var(--fast)}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.stat strong{display:block;font-size:27px;color:var(--g);margin-top:5px;font-family:'Poppins',sans-serif}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{
+  text-align:left;padding:12px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+th{background:#f6f9f6;color:#58675e}
+.manage-card{
+  display:flex;gap:12px;padding:13px;
+  border:1px solid var(--line);
+  border-radius:13px;margin-bottom:10px;
+  align-items:center;
+  transition:box-shadow var(--fast),transform var(--fast);
+  animation:appear .3s var(--ease) backwards;
+}
+.manage-card:hover{box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.manage-card img{
+  width:65px;height:65px;object-fit:cover;
+  border-radius:10px;background:#edf2ee;
+}
+.manage-info{flex:1;min-width:0}
+.manage-actions{
+  display:grid;grid-template-columns:repeat(2,auto);
+  gap:6px;
+}
+.notice{
+  background:#fff8e6;color:#795c19;
+  padding:12px 14px;border-radius:11px;
+  font-size:13px;margin-bottom:15px;
+  border:1px solid #f5e6bb;
+  animation:appear .3s var(--ease);
+}
+footer{
+  text-align:center;padding:25px 10px;
+  color:var(--muted);font-size:12px;
+}
+
+/* CHAT CUSTOMER */
+
+.chat-launch{
+  position:fixed;right:18px;bottom:85px;
+  z-index:40;width:58px;height:58px;
+  border:0;border-radius:50%;
+  background:linear-gradient(135deg,var(--g2),var(--gd));color:white;
+  box-shadow:0 8px 24px rgba(14,92,63,.4);
+  font-size:21px;
+  display:grid;place-items:center;
+  transition:transform var(--fast),box-shadow var(--fast);
+}
+.chat-launch:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 28px rgba(14,92,63,.46)}
+.chat-launch:active{transform:scale(.94)}
+.chat-launch .chat-alert{
+  position:absolute;right:-2px;top:-3px;
+  width:13px;height:13px;
+  background:var(--red);border:2px solid white;
+  border-radius:50%;
+}
+.chat-window{
+  position:fixed;z-index:50;
+  right:18px;bottom:153px;
+  width:min(370px,calc(100vw - 28px));
+  height:min(570px,calc(100dvh - 190px));
+  background:white;border-radius:18px;
+  box-shadow:0 12px 45px #102b1c35;
+  display:flex;flex-direction:column;
+  overflow:hidden;border:1px solid var(--line);
+}
+.chat-header{
+  background:var(--g);color:white;
+  padding:15px;display:flex;
+  align-items:center;justify-content:space-between;
+}
+.chat-header strong{display:block}
+.chat-header small{opacity:.8}
+.chat-header button{
+  border:0;background:#ffffff20;color:white;
+  width:30px;height:30px;border-radius:8px;
+}
+.chat-order{
+  background:#f0f7f2;padding:10px 13px;
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+}
+.chat-messages{
+  flex:1;overflow:auto;padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+  background:#f8faf8;
+}
+.chat-message{
+  max-width:85%;padding:10px 12px;
+  border-radius:13px;font-size:13px;
+  line-height:1.45;overflow-wrap:anywhere;
+}
+.chat-message.customer{
+  align-self:flex-end;
+  background:var(--g);color:white;
+  border-bottom-right-radius:4px;
+}
+.chat-message.admin{
+  align-self:flex-start;
+  background:white;border:1px solid var(--line);
+  border-bottom-left-radius:4px;
+}
+.chat-message.system{
+  align-self:center;
+  max-width:95%;text-align:center;
+  color:#637168;background:#eaf1ec;
+  font-size:11px;border-radius:9px;
+}
+.chat-message time{
+  display:block;font-size:10px;
+  opacity:.7;margin-top:5px;
+}
+.chat-compose{
+  display:flex;gap:8px;padding:11px;
+  border-top:1px solid var(--line);
+  background:white;
+}
+.chat-compose input{flex:1;min-width:0}
+.chat-compose button{padding:0 15px}
+
+/* ADMIN CHAT */
+
+.chat-admin-layout{
+  display:grid;grid-template-columns:310px 1fr;
+  min-height:570px;border:1px solid var(--line);
+  border-radius:14px;overflow:hidden;
+  background:white;
+}
+.inbox-list{
+  border-right:1px solid var(--line);
+  overflow:auto;max-height:650px;
+}
+.inbox-heading{padding:15px;border-bottom:1px solid var(--line)}
+.inbox-item{
+  width:100%;text-align:left;border:0;
+  border-bottom:1px solid var(--line);
+  background:white;padding:14px;
+  display:flex;gap:10px;align-items:center;
+}
+.inbox-item:hover,.inbox-item.active{background:#edf6f0}
+.avatar{
+  width:42px;height:42px;flex-shrink:0;
+  display:grid;place-items:center;
+  border-radius:50%;background:var(--light);
+  color:var(--g);font-weight:800;
+}
+.inbox-details{flex:1;min-width:0}
+.inbox-details strong{display:block;font-size:13px}
+.inbox-details p{
+  margin:5px 0 0;color:var(--muted);
+  font-size:11px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.unread-count{
+  background:var(--red);color:white;
+  min-width:20px;height:20px;
+  display:grid;place-items:center;
+  border-radius:20px;font-size:10px;
+  font-weight:800;padding:0 5px;
+}
+.admin-conversation{
+  display:flex;flex-direction:column;min-width:0;
+}
+.admin-convo-head{
+  padding:14px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;
+  align-items:center;gap:10px;flex-wrap:wrap;
+}
+.admin-convo-body{
+  display:grid;grid-template-columns:minmax(0,1fr) 220px;
+  flex:1;min-height:0;
+}
+.admin-chat-messages{
+  padding:15px;overflow:auto;
+  display:flex;flex-direction:column;gap:10px;
+  max-height:480px;background:#f8faf8;
+}
+.customer-details{
+  padding:14px;border-left:1px solid var(--line);
+  font-size:12px;overflow:auto;
+}
+.customer-details h4{margin:0 0 10px}
+.customer-details p{line-height:1.6}
+.admin-chat-compose{
+  padding:12px;display:flex;gap:8px;
+  border-top:1px solid var(--line);
+}
+.admin-chat-compose input{flex:1;min-width:0}
+.order-track-mini{
+  border:1px solid var(--line);
+  padding:10px;border-radius:10px;
+  margin:9px 0;background:white;
+}
+/* SPLASH / APP LOADER */
+.splash{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:linear-gradient(150deg,#0e5c3f,#17895c 55%,#139167);
+  color:white;
+  transition:opacity .5s var(--ease),visibility .5s var(--ease);
+}
+.splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.splash-mark{
+  width:68px;height:68px;border-radius:20px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.25);
+  display:grid;place-items:center;
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:24px;
+  animation:splashPulse 1.6s ease-in-out infinite;
+}
+@keyframes splashPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,255,255,.25)}
+  50%{transform:scale(1.06);box-shadow:0 0 0 14px rgba(255,255,255,0)}
+}
+.splash-ring{
+  width:34px;height:34px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  animation:spin .8s linear infinite;
+}
+.splash p{margin:0;font-size:13px;letter-spacing:.03em;color:#e3f5ec;font-weight:600}
+
+/* TOASTS */
+#toastStack{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  z-index:90;display:flex;flex-direction:column;gap:8px;
+  width:min(380px,92vw);pointer-events:none;
+}
+.toast{
+  pointer-events:auto;
+  display:flex;align-items:center;gap:10px;
+  background:#1d2b24;color:#fff;
+  padding:13px 16px;border-radius:13px;
+  font-size:13.5px;font-weight:600;line-height:1.4;
+  box-shadow:0 14px 30px rgba(10,30,20,.28);
+  animation:toastIn .35s var(--ease);
+}
+.toast.leaving{animation:toastOut .3s var(--ease) forwards}
+.toast.success{background:#0e5c3f}
+.toast.error{background:#8a2a27}
+.toast .toast-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:#9ae8c3;
+}
+.toast.error .toast-dot{background:#ffb4b1}
+@keyframes toastIn{
+  from{opacity:0;transform:translateY(-14px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes toastOut{
+  to{opacity:0;transform:translateY(-10px) scale(.96)}
+}
+
+/* custom confirm modal */
+.modal-overlay{
+  position:fixed;inset:0;z-index:95;
+  background:rgba(12,30,22,.45);
+  backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  animation:fadeBg .2s var(--ease);
+}
+@keyframes fadeBg{from{opacity:0}to{opacity:1}}
+.modal-box{
+  background:white;border-radius:18px;
+  padding:22px;max-width:360px;width:100%;
+  box-shadow:var(--shadow-lg);
+  animation:modalIn .28s var(--ease);
+  text-align:center;
+}
+@keyframes modalIn{
+  from{opacity:0;transform:translateY(10px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.modal-box h3{margin:0 0 8px}
+.modal-box p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.modal-actions{display:flex;gap:10px;justify-content:center}
+
+.chat-window{animation:chatPop .28s var(--ease)}
+@keyframes chatPop{
+  from{opacity:0;transform:translateY(16px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.chat-launch{animation:launchPop .4s var(--ease)}
+@keyframes launchPop{
+  from{opacity:0;transform:scale(.5)}
+  to{opacity:1;transform:scale(1)}
+}
+.typing-dots{display:inline-flex;gap:3px;align-items:center;padding:4px 2px}
+.typing-dots span{
+  width:6px;height:6px;border-radius:50%;background:var(--muted);
+  animation:typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes typingBounce{
+  0%,60%,100%{transform:translateY(0);opacity:.5}
+  30%{transform:translateY(-4px);opacity:1}
+}
+
+@media(max-width:900px){
+  .menu-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  nav button{padding:8px}
+}
+@media(max-width:650px){
+  .header-inner{align-items:flex-start;padding:12px 0;flex-direction:column}
+  nav{width:100%;overflow:auto;flex-wrap:nowrap;padding-bottom:3px}
+  nav button{white-space:nowrap;font-size:12px}
+  .hero{padding:25px 20px}
+  .menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .food-image{height:125px}
+  .skeleton-card .skeleton-block.img{height:125px}
+  #toastStack{top:10px;width:94vw}
+  .food-content{padding:11px}
+  .food-content h3{font-size:14px}
+  .food-bottom{align-items:flex-start;flex-direction:column}
+  .food-bottom .btn{width:100%}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:auto}
+  .admin-stats{grid-template-columns:1fr 1fr}
+  .chat-admin-layout{grid-template-columns:1fr}
+  .inbox-list{max-height:230px;border-right:0;border-bottom:1px solid var(--line)}
+  .admin-convo-body{grid-template-columns:1fr}
+  .customer-details{border-left:0;border-top:1px solid var(--line)}
+  .admin-chat-messages{max-height:350px;min-height:250px}
+  .manage-card{align-items:flex-start;flex-wrap:wrap}
+  .manage-actions{width:100%;grid-template-columns:repeat(2,1fr)}
+  .manage-actions button{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="splash" id="splashScreen">
+  <div class="splash-mark">CH</div>
+  <div class="splash-ring"></div>
+  <p id="splashText">Loading the menu...</p>
+</div>
+
+<div id="toastStack" aria-live="polite"></div>
+
+<header>
+  <div class="container header-inner">
+    <div class="brand">
+      <div class="brand-mark">CH</div>
+      <span>Canteen Order Hub Mplace</span>
+    </div>
+
+    <nav id="mainNav">
+      <button class="active" onclick="showPage('home',this)">Home</button>
+      <button onclick="showPage('orders',this)">My Orders</button>
+      <button onclick="showPage('account',this)">My Account</button>
+      <button onclick="showPage('login',this)" id="loginNav">Login</button>
+      <button onclick="showPage('register',this)" id="registerNav">Register</button>
+      <button onclick="showPage('adminLogin',this)">Admin</button>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- HOME -->
+  <section id="page-home">
+    <div class="hero">
+      <div class="hero-tag">CANTEEN ORDERING SYSTEM</div>
+      <h1>Order your favorite meals.</h1>
+      <p>Browse the menu, add your favorite food to your cart, and place your order conveniently through Canteen Order Hub Mplace.</p>
+    </div>
+
+    <div class="section-title">
+      <h2>Our Menu</h2>
+      <span class="muted small" id="menuCount">Loading menu...</span>
+    </div>
+
+    <div class="toolbar">
+      <input class="field search" id="menuSearch" placeholder="Search food..." oninput="renderMenu()">
+      <select class="field" id="canteenFilter" onchange="renderMenu()">
+        <option value="all">All Canteens</option>
+      </select>
+    </div>
+
+    <div class="categories" id="categories">
+      <button class="category active" onclick="setCategory('all',this)">All Items</button>
+      <button class="category" onclick="setCategory('available',this)">Available</button>
+      <button class="category" onclick="setCategory('unavailable',this)">Unavailable</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid"></div>
+  </section>
+
+  <!-- CART -->
+  <section id="page-cart" class="hidden">
+    <div class="section-title"><h2>Your Shopping Cart</h2></div>
+    <div class="panel">
+      <div id="cartItems"></div>
+      <div class="total-row">
+        <span>Total</span>
+        <span id="cartTotal">₱0.00</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="showPage('home')">Continue Shopping</button>
+        <button class="btn" onclick="goCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section id="page-checkout" class="hidden">
+    <div class="section-title"><h2>Checkout</h2></div>
+    <div class="panel">
+      <div id="checkoutSummary" class="notice"></div>
+      <form onsubmit="placeOrder(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input class="field" id="checkoutName" required>
+          </div>
+          <div class="form-group">
+            <label>Cellphone Number</label>
+            <input class="field" id="checkoutPhone" type="tel" required>
+          </div>
+          <div class="form-group full">
+            <label>Payment Method</label>
+            <select class="field" id="checkoutPayment">
+              <option value="Cash">Cash</option>
+              <option value="GCash">GCash</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Order Note (Optional)</label>
+            <textarea class="field" id="checkoutNote" rows="3" placeholder="Additional instructions..."></textarea>
+          </div>
+        </div>
+        <button class="btn" id="placeOrderBtn" type="submit">Place Order</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ORDER SUCCESS -->
+  <section id="page-success" class="hidden">
+    <div class="panel" style="text-align:center;padding:35px">
+      <h2 style="color:var(--g)">Order Successfully Placed</h2>
+      <p class="muted">Your order has been sent to the canteen.</p>
+      <h3 id="successOrderId"></h3>
+      <button class="btn" onclick="showPage('orders')">Track My Order</button>
+    </div>
+  </section>
+
+  <!-- MY ORDERS -->
+  <section id="page-orders" class="hidden">
+    <div class="section-title">
+      <h2>My Orders</h2>
+      <button class="btn btn-outline btn-small" onclick="loadMyOrders()">Refresh</button>
+    </div>
+    <div id="myOrdersList"></div>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section id="page-account" class="hidden">
+    <div class="section-title"><h2>My Account</h2></div>
+    <div class="panel" id="accountContent"></div>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="page-login" class="hidden">
+    <div class="panel" style="max-width:470px;margin:auto">
+      <h2>Customer Login</h2>
+      <p class="muted small">Login to place orders and chat with the canteen.</p>
+      <form onsubmit="customerLogin(event)">
+        <div class="form-group">
+          <label>Cellphone Number</label>
+          <input class="field" id="loginPhone" type="tel" required placeholder="09XXXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input class="field" id="loginPassword" type="password" required>
+        </div>
+        <button class="btn" id="loginBtn" type="submit">Login</button>
+      </form>
+      <p class="small muted">No account yet? <a href="#" onclick="showPage('register');return false">Register here</a></p>
+    </div>
+  </section>
+
+  <!-- REGISTER -->
+  <section id="page-register" class="hidden">
+    <div class="panel" style="max-width:470px;margin:auto">
+      <h2>Create Account</h2>
+      <form onsubmit="customerRegister(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input class="field" id="registerName" required>
+        </div>
+        <div class="form-group">
+          <label>Cellphone Number</label>
+          <input class="field" id="registerPhone" type="tel" required placeholder="09XXXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input class="field" id="registerPassword" type="password" minlength="6" required>
+        </div>
+        <button class="btn" id="registerBtn" type="submit">Create Account</button>
+      </form>
+      <p class="small muted">Already registered? <a href="#" onclick="showPage('login');return false">Login here</a></p>
+    </div>
+  </section>
+
+  <!-- ADMIN LOGIN -->
+  <section id="page-adminLogin" class="hidden">
+    <div class="panel" style="max-width:430px;margin:auto">
+      <h2>Admin Login</h2>
+      <p class="muted small">Enter your administrator PIN.</p>
+      <form onsubmit="loginAdmin(event)">
+        <div class="form-group">
+          <label>Admin PIN</label>
+          <input class="field" id="adminPinInput" type="password" required>
+        </div>
+        <button class="btn" type="submit">Login as Admin</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ADMIN DASHBOARD -->
+  <section id="page-admin" class="hidden">
+    <div class="section-title">
+      <h2>Admin Dashboard</h2>
+      <button class="btn btn-danger btn-small" onclick="logoutAdmin()">Logout</button>
+    </div>
+
+    <div class="admin-stats">
+      <div class="panel stat"><span class="muted small">Total Orders</span><strong id="statOrders">0</strong></div>
+      <div class="panel stat"><span class="muted small">Pending Orders</span><strong id="statPending">0</strong></div>
+      <div class="panel stat"><span class="muted small">Menu Items</span><strong id="statMenu">0</strong></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabOrders" onclick="adminTab('orders')">Orders</button>
+      <button class="tab" id="tabManage" onclick="adminTab('manage')">Manage Menu</button>
+      <button class="tab" id="tabChats" onclick="adminTab('chats')">
+        Messages <span id="adminChatBadge" class="nav-badge hidden">0</span>
+      </button>
+    </div>
+
+    <div id="adminOrdersTab">
+      <div class="toolbar">
+        <select class="field" id="orderFilter" onchange="renderAdminOrders()">
+          <option value="all">All Orders</option>
+          <option>Pending</option>
+          <option>Confirmed</option>
+          <option>Preparing</option>
+          <option>Ready</option>
+          <option>Completed</option>
+          <option>Cancelled</option>
+        </select>
+        <button class="btn btn-outline" onclick="loadAdminOrders()">Refresh Orders</button>
+      </div>
+      <div id="adminOrdersList"></div>
+    </div>
+
+    <div id="adminManageTab" class="hidden">
+      <div class="panel" style="margin-bottom:18px">
+        <h3 id="menuFormTitle">Add New Food</h3>
+        <form onsubmit="saveMenuItem(event)">
+          <input type="hidden" id="editMenuId">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Food Name</label>
+              <input class="field" id="foodName" required>
+            </div>
+            <div class="form-group">
+              <label>Price</label>
+              <input class="field" id="foodPrice" type="number" min="0" step="0.01" required>
+            </div>
+            <div class="form-group full">
+              <label>Canteen / Description</label>
+              <input class="field" id="foodDescription" placeholder="Canteen 1">
+            </div>
+            <div class="form-group full">
+              <label>Food Photo</label>
+              <input class="field" id="foodImageFile" type="file" accept="image/*" onchange="previewFoodImage(event)">
+              <img id="foodImagePreview" class="hidden" style="width:120px;height:100px;object-fit:cover;border-radius:10px;margin-top:10px">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="saveMenuBtn" type="submit">Save Food</button>
+            <button class="btn btn-outline hidden" id="cancelEditBtn" type="button" onclick="resetMenuForm()">Cancel Edit</button>
+          </div>
+        </form>
+      </div>
+      <div id="manageMenuList"></div>
+    </div>
+
+    <div id="adminChatsTab" class="hidden">
+      <div class="chat-admin-layout">
+        <div class="inbox-list">
+          <div class="inbox-heading">
+            <strong>Customer Messages</strong>
+            <p class="small muted" style="margin:5px 0 0">Select a conversation to reply.</p>
+          </div>
+          <div id="adminInboxList">
+            <div class="empty">No messages yet.</div>
+          </div>
+        </div>
+
+        <div class="admin-conversation">
+          <div class="admin-convo-head">
+            <div>
+              <strong id="adminChatCustomer">Select a conversation</strong>
+              <div class="small muted" id="adminChatPhone"></div>
+            </div>
+          </div>
+
+          <div class="admin-convo-body">
+            <div style="display:flex;flex-direction:column;min-width:0">
+              <div class="admin-chat-messages" id="adminChatMessages">
+                <div class="empty">Choose a customer from the inbox.</div>
+              </div>
+              <form class="admin-chat-compose" onsubmit="adminSendMessage(event)">
+                <input class="field" id="adminMessageInput" placeholder="Write a reply..." maxlength="1000" disabled>
+                <button class="btn" id="adminSendBtn" disabled>Send</button>
+              </form>
+            </div>
+            <aside class="customer-details" id="adminCustomerDetails">
+              <h4>Customer Details</h4>
+              <p class="muted">Select a conversation to view customer details and order tracking.</p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<button class="cart-float" onclick="showPage('cart')">
+  Cart <span class="cart-count" id="cartCount">0</span>
+</button>
+
+<button class="chat-launch hidden" id="chatLaunch" onclick="toggleCustomerChat()" aria-label="Open chat">
+  <span style="font-size:22px;line-height:1">💬</span>
+  <span class="chat-alert hidden" id="customerChatAlert"></span>
+</button>
+
+<div class="chat-window hidden" id="customerChatWindow">
+  <div class="chat-header">
+    <div>
+      <strong>Canteen Chat Support</strong>
+      <small>Send us your questions and feedback</small>
+    </div>
+    <button onclick="toggleCustomerChat()">X</button>
+  </div>
+  <div class="chat-order" id="customerChatOrder">
+    Your order updates will appear here.
+  </div>
+  <div class="chat-messages" id="customerChatMessages">
+    <div class="empty">Loading conversation...</div>
+  </div>
+  <form class="chat-compose" onsubmit="sendCustomerMessage(event)">
+    <input class="field" id="customerMessageInput" placeholder="Type your message..." maxlength="1000">
+    <button class="btn" type="submit">Send</button>
+  </form>
+</div>
+
+<footer>
+  Canteen Order Hub Mplace · Online Food Ordering System
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/************************************************************
+ * CONFIGURATION — Supabase backend
+ ************************************************************/
+
+const SUPABASE_URL = "https://gnshodnqpxuxupfvnkoc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_HfARNQezI6Zus0a3-fzVxg_fuGov4VG";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let menu = [];
+let cart = JSON.parse(localStorage.getItem("canteen_cart") || "[]");
+let customer = JSON.parse(localStorage.getItem("canteen_customer_user") || "null");
+let customerToken = sessionStorage.getItem("canteen_customer_token") || "";
+let isAdmin = sessionStorage.getItem("canteen_admin") === "yes";
+let adminPin = isAdmin ? (sessionStorage.getItem("canteen_admin_pin") || "") : "";
+let orders = [];
+let activeCategory = "all";
+let activeAdminTab = "orders";
+let activeAdminChatUserId = "";
+let adminChats = [];
+let customerChatOpen = false;
+let customerChatTimer = null;
+let adminChatTimer = null;
+let customerChatBusy = false;
+let adminChatBusy = false;
+let editingImageData = "";
+let currentMenuImage = "";
+
+/************************************************************
+ * API HELPERS — same shape as before (apiGet/apiPost), now
+ * backed by Supabase instead of Google Sheets/Apps Script.
+ ************************************************************/
+
+async function apiGet(type) {
+  if (type === "menu") {
+    const { data, error } = await sb
+      .from("menu_items")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (error) throw new Error(error.message);
+
+    return {
+      menu: (data || []).map(row => ({
+        id: row.id,
+        name: row.name,
+        price: row.price,
+        description: row.canteen,      // canteen label, kept as "description" to match the rest of the app
+        image: row.image_url || "",
+        available: row.available
+      }))
+    };
+  }
+
+  if (type === "orders") {
+    const { data, error } = await sb.rpc("admin_get_orders", { p_pin: adminPin });
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  throw new Error("Unknown request type.");
+}
+
+async function apiPost(data) {
+  const action = data.action;
+
+  switch (action) {
+
+    case "register": {
+      const { data: result, error } = await sb.rpc("register_customer", {
+        p_name: data.name, p_phone: data.phone, p_password: data.password
+      });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "login": {
+      const { data: result, error } = await sb.rpc("login_customer", {
+        p_phone: data.phone, p_password: data.password
+      });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "logout": {
+      const { error } = await sb.rpc("logout_customer", { p_token: data.token });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "getMyOrders": {
+      const { data: result, error } = await sb.rpc("customer_get_my_orders", { p_token: data.token });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "createOrder": {
+      const { data: result, error } = await sb.rpc("customer_create_order", {
+        p_token: data.token,
+        p_items: data.items,
+        p_payment: data.payment,
+        p_notes: data.note || ""
+      });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "getMyChat": {
+      const { data: result, error } = await sb.rpc("customer_get_chat", { p_token: data.token });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "markMyChatRead": {
+      const { error } = await sb.rpc("customer_mark_chat_read", { p_token: data.token });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "sendChatMessage": {
+      const { error } = await sb.rpc("customer_send_message", {
+        p_token: data.token, p_message: data.message, p_order_id: data.orderId || null
+      });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "updateOrderStatus": {
+      const { error } = await sb.rpc("admin_update_order_status", {
+        p_pin: adminPin, p_order_id: data.id, p_status: data.status
+      });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "deleteOrder": {
+      const { error } = await sb.rpc("admin_delete_order", { p_pin: adminPin, p_order_id: data.id });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "addMenu": {
+      const { data: result, error } = await sb.rpc("admin_add_menu_item", {
+        p_pin: adminPin, p_canteen: data.description, p_name: data.name,
+        p_price: data.price, p_image_url: data.image || ""
+      });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "updateMenu": {
+      const { error } = await sb.rpc("admin_update_menu_item", {
+        p_pin: adminPin, p_id: data.id, p_canteen: data.description, p_name: data.name,
+        p_price: data.price, p_image_url: data.image || ""
+      });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "toggleMenu": {
+      const { error } = await sb.rpc("admin_toggle_menu_item", { p_pin: adminPin, p_id: data.id });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "deleteMenu": {
+      const { error } = await sb.rpc("admin_delete_menu_item", { p_pin: adminPin, p_id: data.id });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "adminGetChats": {
+      const { data: result, error } = await sb.rpc("admin_get_chats", { p_pin: adminPin });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "adminGetChatMessages": {
+      const { data: result, error } = await sb.rpc("admin_get_chat_messages", {
+        p_pin: adminPin, p_customer_id: data.userId
+      });
+      if (error) throw new Error(error.message);
+      return result;
+    }
+
+    case "adminMarkChatRead": {
+      const { error } = await sb.rpc("admin_mark_chat_read", { p_pin: adminPin, p_customer_id: data.userId });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    case "adminSendChatMessage": {
+      const { error } = await sb.rpc("admin_send_message", {
+        p_pin: adminPin, p_customer_id: data.userId, p_message: data.message
+      });
+      if (error) throw new Error(error.message);
+      return {};
+    }
+
+    default:
+      throw new Error("Unknown action: " + action);
+  }
+}
+
+function money(n) {
+  return "₱" + Number(n || 0).toLocaleString("en-PH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[c]);
+}
+
+function safeImage(url) {
+  const s = String(url || "");
+  if (/^https?:\/\//i.test(s)) return s;
+  return "";
+}
+
+function saveCart() {
+  localStorage.setItem("canteen_cart", JSON.stringify(cart));
+  updateCartCount(true);
+}
+
+function updateCartCount(bump) {
+  const count = cart.reduce((sum, x) => sum + Number(x.qty || 0), 0);
+  const el = document.getElementById("cartCount");
+  el.textContent = count;
+  if (bump) {
+    el.classList.remove("bump");
+    void el.offsetWidth;
+    el.classList.add("bump");
+  }
+}
+
+/************************************************************
+ * TOASTS + MODAL (modern replacements for alert/confirm)
+ ************************************************************/
+
+function showToast(message, type = "default") {
+  const stack = document.getElementById("toastStack");
+  if (!stack) { alert(message); return; }
+
+  const toast = document.createElement("div");
+  toast.className = "toast" + (type === "error" ? " error" : type === "success" ? " success" : "");
+  toast.innerHTML = `<span class="toast-dot"></span><span>${escapeHTML(message)}</span>`;
+  stack.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("leaving");
+    setTimeout(() => toast.remove(), 280);
+  }, 3200);
+}
+
+function showMessage(message, type) {
+  showToast(message, type);
+}
+
+function confirmModal(message, title = "Please confirm") {
+  return new Promise(resolve => {
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.innerHTML = `
+      <div class="modal-box">
+        <h3>${escapeHTML(title)}</h3>
+        <p>${escapeHTML(message)}</p>
+        <div class="modal-actions">
+          <button class="btn btn-outline" data-act="cancel">Cancel</button>
+          <button class="btn btn-danger" data-act="ok">Confirm</button>
+        </div>
+      </div>
+    `;
+
+    function close(result) {
+      overlay.remove();
+      resolve(result);
+    }
+
+    overlay.addEventListener("click", e => {
+      if (e.target === overlay) close(false);
+      const act = e.target.closest("[data-act]")?.dataset.act;
+      if (act === "ok") close(true);
+      if (act === "cancel") close(false);
+    });
+
+    document.body.appendChild(overlay);
+  });
+}
+
+function setBtnBusy(btn, busy) {
+  if (!btn) return;
+  btn.classList.toggle("is-loading", !!busy);
+  btn.disabled = !!busy;
+}
+
+/************************************************************
+ * PAGE NAVIGATION
+ ************************************************************/
+
+function showPage(page, navButton) {
+  const pages = [
+    "home","cart","checkout","success","orders",
+    "account","login","register","adminLogin","admin"
+  ];
+
+  pages.forEach(p => {
+    const el = document.getElementById("page-" + p);
+    if (el) el.classList.toggle("hidden", p !== page);
+  });
+
+  document.querySelectorAll("#mainNav button").forEach(b => {
+    b.classList.remove("active");
+  });
+
+  if (navButton) navButton.classList.add("active");
+
+  if (page === "cart") renderCart();
+  if (page === "checkout") prepareCheckout();
+  if (page === "orders") loadMyOrders();
+  if (page === "account") renderAccount();
+  if (page === "admin") refreshAdminDashboard();
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function updateNavigation() {
+  const loggedIn = !!customerToken && !!customer;
+
+  document.getElementById("loginNav").classList.toggle("hidden", loggedIn);
+  document.getElementById("registerNav").classList.toggle("hidden", loggedIn);
+  document.getElementById("chatLaunch").classList.toggle("hidden", !loggedIn);
+
+  if (!loggedIn) {
+    document.getElementById("customerChatWindow").classList.add("hidden");
+    stopCustomerChatPolling();
+  }
+}
+
+/************************************************************
+ * MENU
+ ************************************************************/
+
+function renderMenuSkeleton(count = 8) {
+  const grid = document.getElementById("menuGrid");
+  if (!grid) return;
+  grid.innerHTML = Array.from({ length: count }).map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton-block img"></div>
+      <div class="sk-body">
+        <div class="skeleton-block line w80"></div>
+        <div class="skeleton-block line w60"></div>
+        <div class="skeleton-block line w40"></div>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function loadMenu() {
+  try {
+    const data = await apiGet("menu");
+    menu = Array.isArray(data.menu) ? data.menu : [];
+    localStorage.setItem("canteen_menu", JSON.stringify(menu));
+    renderMenu();
+    renderManageMenu();
+    updateStats();
+  } catch (err) {
+    const cached = JSON.parse(localStorage.getItem("canteen_menu") || "[]");
+    menu = cached;
+    renderMenu();
+    console.error(err);
+  }
+}
+
+function setCategory(category, button) {
+  activeCategory = category;
+  document.querySelectorAll(".category").forEach(b => b.classList.remove("active"));
+  button.classList.add("active");
+  renderMenu();
+}
+
+function renderMenu() {
+  const grid = document.getElementById("menuGrid");
+  const search = (document.getElementById("menuSearch")?.value || "").toLowerCase();
+  const canteen = document.getElementById("canteenFilter")?.value || "all";
+
+  let filtered = menu.filter(item => {
+    const available = item.available !== false;
+    const matchesSearch =
+      String(item.name).toLowerCase().includes(search) ||
+      String(item.description || "").toLowerCase().includes(search);
+
+    const matchesCanteen =
+      canteen === "all" ||
+      String(item.description || "") === canteen;
+
+    const matchesCategory =
+      activeCategory === "all" ||
+      (activeCategory === "available" && available) ||
+      (activeCategory === "unavailable" && !available);
+
+    return matchesSearch && matchesCanteen && matchesCategory;
+  });
+
+  document.getElementById("menuCount").textContent =
+    filtered.length + " items";
+
+  const canteens = [...new Set(menu.map(x => x.description).filter(Boolean))];
+  const filter = document.getElementById("canteenFilter");
+  const current = filter.value;
+
+  filter.innerHTML = '<option value="all">All Canteens</option>' +
+    canteens.map(x =>
+      `<option value="${escapeHTML(x)}">${escapeHTML(x)}</option>`
+    ).join("");
+
+  if (canteens.includes(current)) filter.value = current;
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No food items found.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => {
+    const image = safeImage(item.image);
+    const available = item.available !== false;
+    const inCart = cart.find(x => String(x.id) === String(item.id));
+
+    return `
+      <article class="food-card">
+        <img class="food-image"
+          src="${image || "https://placehold.co/500x350/e8f4ed/176b4a?text=Canteen+Food"}"
+          alt="${escapeHTML(item.name)}"
+          onerror="this.src='https://placehold.co/500x350/e8f4ed/176b4a?text=Canteen+Food'">
+        <div class="food-content">
+          <h3>${escapeHTML(item.name)}</h3>
+          <p>${escapeHTML(item.description || "Canteen Food")}</p>
+          <div class="food-bottom">
+            <span class="price">${money(item.price)}</span>
+            ${
+              available
+                ? `<button class="btn btn-small" onclick="addToCart('${escapeHTML(item.id)}')">
+                    ${inCart ? "Add More" : "Add to Cart"}
+                  </button>`
+                : `<span class="sold">Unavailable</span>`
+            }
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function addToCart(id) {
+  const item = menu.find(x => String(x.id) === String(id));
+  if (!item || item.available === false) return;
+
+  const found = cart.find(x => String(x.id) === String(id));
+
+  if (found) {
+    found.qty++;
+  } else {
+    cart.push({
+      id:item.id,
+      name:item.name,
+      price:Number(item.price),
+      image:item.image || "",
+      qty:1
+    });
+  }
+
+  saveCart();
+  renderMenu();
+}
+
+function changeQty(id, amount) {
+  const item = cart.find(x => String(x.id) === String(id));
+  if (!item) return;
+
+  item.qty += amount;
+
+  if (item.qty <= 0) {
+    cart = cart.filter(x => String(x.id) !== String(id));
+  }
+
+  saveCart();
+  renderCart();
+}
+
+function removeCartItem(id) {
+  cart = cart.filter(x => String(x.id) !== String(id));
+  saveCart();
+  renderCart();
+}
+
+function cartTotal() {
+  return cart.reduce((sum, x) =>
+    sum + Number(x.price) * Number(x.qty), 0
+  );
+}
+
+function renderCart() {
+  const box = document.getElementById("cartItems");
+
+  if (!cart.length) {
+    box.innerHTML = '<div class="empty"><h3>Your cart is empty</h3><p>Add food items from the menu.</p></div>';
+    document.getElementById("cartTotal").textContent = money(0);
+    return;
+  }
+
+  box.innerHTML = cart.map(x => `
+    <div class="cart-row">
+      <img src="${safeImage(x.image) || "https://placehold.co/100x100/e8f4ed/176b4a?text=Food"}"
+        onerror="this.src='https://placehold.co/100x100/e8f4ed/176b4a?text=Food'">
+      <div class="cart-info">
+        <strong>${escapeHTML(x.name)}</strong>
+        <span class="small muted">${money(x.price)} each</span>
+        <div class="small price">${money(x.price * x.qty)}</div>
+      </div>
+      <div class="qty-control">
+        <button onclick="changeQty('${escapeHTML(x.id)}',-1)">−</button>
+        <strong>${x.qty}</strong>
+        <button onclick="changeQty('${escapeHTML(x.id)}',1)">+</button>
+      </div>
+      <button class="btn btn-danger btn-small" onclick="removeCartItem('${escapeHTML(x.id)}')">X</button>
+    </div>
+  `).join("");
+
+  document.getElementById("cartTotal").textContent = money(cartTotal());
+}
+
+/************************************************************
+ * CUSTOMER AUTH
+ ************************************************************/
+
+function requireLogin() {
+  if (!customerToken || !customer) {
+    showMessage("Please login to continue.");
+    showPage("login");
+    return false;
+  }
+  return true;
+}
+
+async function customerRegister(event) {
+  event.preventDefault();
+
+  const btn = document.getElementById("registerBtn");
+  btn.disabled = true;
+  btn.textContent = "Creating account...";
+  btn.classList.add("is-loading");
+
+  try {
+    const data = await apiPost({
+      action:"register",
+      name:document.getElementById("registerName").value.trim(),
+      phone:document.getElementById("registerPhone").value.trim(),
+      password:document.getElementById("registerPassword").value
+    });
+
+    customer = data.user;
+    customerToken = data.token;
+
+    localStorage.setItem("canteen_customer_user", JSON.stringify(customer));
+    sessionStorage.setItem("canteen_customer_token", customerToken);
+
+    updateNavigation();
+    showMessage("Your account has been created successfully.", "success");
+    showPage("home");
+
+  } catch (err) {
+    showMessage(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Create Account";
+    btn.classList.remove("is-loading");
+  }
+}
+
+async function customerLogin(event) {
+  event.preventDefault();
+
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "Logging in...";
+  btn.classList.add("is-loading");
+
+  try {
+    const data = await apiPost({
+      action:"login",
+      phone:document.getElementById("loginPhone").value.trim(),
+      password:document.getElementById("loginPassword").value
+    });
+
+    customer = data.user;
+    customerToken = data.token;
+
+    localStorage.setItem("canteen_customer_user", JSON.stringify(customer));
+    sessionStorage.setItem("canteen_customer_token", customerToken);
+
+    updateNavigation();
+    showMessage("Welcome, " + customer.name + "!", "success");
+    showPage("home");
+    startCustomerChatPolling();
+
+  } catch (err) {
+    showMessage(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Login";
+    btn.classList.remove("is-loading");
+  }
+}
+
+async function customerLogout() {
+  try {
+    if (customerToken) {
+      await apiPost({
+        action:"logout",
+        token:customerToken
+      });
+    }
+  } catch (e) {
+    console.warn(e);
+  }
+
+  customer = null;
+  customerToken = "";
+  localStorage.removeItem("canteen_customer_user");
+  sessionStorage.removeItem("canteen_customer_token");
+
+  updateNavigation();
+  showPage("home");
+}
+
+function renderAccount() {
+  const box = document.getElementById("accountContent");
+
+  if (!requireLogin()) return;
+
+  box.innerHTML = `
+    <h3>${escapeHTML(customer.name)}</h3>
+    <p class="muted">Customer Account</p>
+    <p><strong>Full Name:</strong> ${escapeHTML(customer.name)}</p>
+    <p><strong>Cellphone:</strong> ${escapeHTML(customer.phone)}</p>
+    <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+    <button class="btn btn-outline" onclick="showPage('orders')">View My Orders</button>
+    <button class="btn btn-danger" onclick="customerLogout()">Logout</button>
+  `;
+}
+
+/************************************************************
+ * CHECKOUT
+ ************************************************************/
+
+function goCheckout() {
+  if (!cart.length) {
+    showMessage("Your cart is empty.");
+    return;
+  }
+
+  if (!requireLogin()) return;
+
+  showPage("checkout");
+}
+
+function prepareCheckout() {
+  if (!customer) return;
+
+  document.getElementById("checkoutName").value = customer.name || "";
+  document.getElementById("checkoutPhone").value = customer.phone || "";
+
+  document.getElementById("checkoutSummary").innerHTML =
+    "Items: " + cart.reduce((s,x) => s + x.qty,0) +
+    " | Total: <strong>" + money(cartTotal()) + "</strong>";
+}
+
+async function placeOrder(event) {
+  event.preventDefault();
+
+  if (!requireLogin()) return;
+
+  if (!cart.length) {
+    showMessage("Your cart is empty.");
+    return;
+  }
+
+  const btn = document.getElementById("placeOrderBtn");
+  btn.disabled = true;
+  btn.textContent = "Submitting order...";
+  btn.classList.add("is-loading");
+
+  try {
+    const data = await apiPost({
+      action:"createOrder",
+      token:customerToken,
+      items:cart.map(x => ({
+        id:x.id,
+        qty:x.qty
+      })),
+      payment:document.getElementById("checkoutPayment").value,
+      note:document.getElementById("checkoutNote").value
+    });
+
+    cart = [];
+    saveCart();
+
+    document.getElementById("successOrderId").textContent =
+      "Order ID: " + (data.orderId || data.id || "");
+
+    showPage("success");
+    showMessage("Order placed successfully!", "success");
+
+    loadMyOrders();
+    if (customerChatOpen) loadCustomerChat();
+
+  } catch (err) {
+    showMessage(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Place Order";
+    btn.classList.remove("is-loading");
+  }
+}
+
+/************************************************************
+ * CUSTOMER ORDERS
+ ************************************************************/
+
+async function loadMyOrders() {
+  const box = document.getElementById("myOrdersList");
+
+  if (!customerToken) {
+    box.innerHTML = '<div class="panel empty"><h3>Please login first.</h3><button class="btn" onclick="showPage(\'login\')">Login</button></div>';
+    return;
+  }
+
+  box.innerHTML = '<div class="panel empty">Loading your orders...</div>';
+
+  try {
+    const data = await apiPost({
+      action:"getMyOrders",
+      token:customerToken
+    });
+
+    const list = data.orders || [];
+
+    if (!list.length) {
+      box.innerHTML = '<div class="panel empty"><h3>No orders yet</h3><p>Your orders will appear here.</p></div>';
+      return;
+    }
+
+    box.innerHTML = list.slice().reverse().map(o => {
+      let items = [];
+
+      try {
+        items = typeof o.items === "string" ? JSON.parse(o.items) : o.items;
+      } catch (e) {}
+
+      return `
+        <div class="panel order-card">
+          <div class="order-head">
+            <div>
+              <strong>Order #${escapeHTML(o.id)}</strong>
+              <div class="small muted">${escapeHTML(o.date)}</div>
+            </div>
+            <span class="status ${escapeHTML(o.status)}">${escapeHTML(o.status)}</span>
+          </div>
+          <div class="order-items">
+            ${(items || []).map(i =>
+              `${escapeHTML(i.name)} × ${Number(i.qty || 0)} — ${money(i.price * i.qty)}`
+            ).join("<br>")}
+          </div>
+          <div class="order-head">
+            <span class="small muted">${escapeHTML(o.payment)}</span>
+            <strong>${money(o.total)}</strong>
+          </div>
+          ${o.note ? `<p class="small muted">Note: ${escapeHTML(o.note)}</p>` : ""}
+          <button class="btn btn-light btn-small" onclick="openChatForOrder('${escapeHTML(o.id)}')">Ask about this order</button>
+        </div>
+      `;
+    }).join("");
+
+  } catch (err) {
+    box.innerHTML = `<div class="panel notice">${escapeHTML(err.message)}</div>`;
+  }
+}
+
+function openChatForOrder(orderId) {
+  if (!requireLogin()) return;
+  toggleCustomerChat(true);
+  document.getElementById("customerChatOrder").dataset.orderId = orderId;
+  renderCustomerOrderTracking();
+  document.getElementById("customerMessageInput").focus();
+}
+
+/************************************************************
+ * ADMIN AUTH AND DASHBOARD
+ ************************************************************/
+
+async function loginAdmin(event) {
+  event.preventDefault();
+
+  const pin = document.getElementById("adminPinInput").value;
+
+  try {
+    await apiGet2CheckPin(pin);
+  } catch (e) {
+    showMessage("Incorrect admin PIN.");
+    return;
+  }
+
+  adminPin = pin;
+  isAdmin = true;
+
+  sessionStorage.setItem("canteen_admin","yes");
+  sessionStorage.setItem("canteen_admin_pin", pin);
+
+  showPage("admin");
+}
+
+async function apiGet2CheckPin(pin) {
+  const { error } = await sb.rpc("admin_get_orders", { p_pin: pin });
+  if (error) throw new Error(error.message);
+}
+
+function logoutAdmin() {
+  isAdmin = false;
+  adminPin = "";
+
+  sessionStorage.removeItem("canteen_admin");
+  sessionStorage.removeItem("canteen_admin_pin");
+
+  stopAdminChatPolling();
+  showPage("home");
+}
+
+async function refreshAdminDashboard() {
+  if (!isAdmin) {
+    showPage("adminLogin");
+    return;
+  }
+
+  await Promise.allSettled([
+    loadAdminOrders(),
+    loadMenu(),
+    loadAdminChats()
+  ]);
+
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById("statOrders").textContent = orders.length;
+  document.getElementById("statPending").textContent =
+    orders.filter(x => x.status === "Pending").length;
+  document.getElementById("statMenu").textContent = menu.length;
+}
+
+function adminTab(tab) {
+  activeAdminTab = tab;
+
+  document.getElementById("adminOrdersTab").classList.toggle("hidden",tab !== "orders");
+  document.getElementById("adminManageTab").classList.toggle("hidden",tab !== "manage");
+  document.getElementById("adminChatsTab").classList.toggle("hidden",tab !== "chats");
+
+  ["orders","manage","chats"].forEach(t => {
+    document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1))
+      .classList.toggle("active",t === tab);
+  });
+
+  if (tab === "orders") loadAdminOrders();
+  if (tab === "manage") {
+    loadMenu();
+    renderManageMenu();
+  }
+  if (tab === "chats") {
+    loadAdminChats();
+    startAdminChatPolling();
+  } else {
+    stopAdminChatPolling();
+  }
+}
+
+/************************************************************
+ * ADMIN ORDERS
+ ************************************************************/
+
+async function loadAdminOrders() {
+  if (!isAdmin) return;
+
+  try {
+    const data = await apiGet("orders");
+    orders = data.orders || [];
+    renderAdminOrders();
+    updateStats();
+  } catch (err) {
+    document.getElementById("adminOrdersList").innerHTML =
+      `<div class="notice">${escapeHTML(err.message)}</div>`;
+  }
+}
+
+function renderAdminOrders() {
+  const box = document.getElementById("adminOrdersList");
+  const filter = document.getElementById("orderFilter").value;
+
+  const list = orders.filter(o =>
+    filter === "all" || o.status === filter
+  );
+
+  if (!list.length) {
+    box.innerHTML = '<div class="panel empty">No orders found.</div>';
+    return;
+  }
+
+  box.innerHTML = list.slice().reverse().map(o => {
+    let items = [];
+
+    try {
+      items = typeof o.items === "string" ? JSON.parse(o.items) : o.items;
+    } catch (e) {}
+
+    return `
+      <div class="panel order-card">
+        <div class="order-head">
+          <div>
+            <strong>Order #${escapeHTML(o.id)}</strong>
+            <div class="small muted">${escapeHTML(o.date)}</div>
+          </div>
+          <span class="status ${escapeHTML(o.status)}">${escapeHTML(o.status)}</span>
+        </div>
+        <div class="order-items">
+          <strong>${escapeHTML(o.customer)}</strong> · ${escapeHTML(o.phone)}<br>
+          ${(items || []).map(i =>
+            `${escapeHTML(i.name)} × ${Number(i.qty || 0)}`
+          ).join("<br>")}
+        </div>
+        <div class="order-head">
+          <span class="small muted">${escapeHTML(o.payment)}</span>
+          <strong>${money(o.total)}</strong>
+        </div>
+        ${o.note ? `<p class="small muted">Note: ${escapeHTML(o.note)}</p>` : ""}
+        <div class="toolbar" style="margin-bottom:0">
+          <select class="field" style="flex:1" id="status-${escapeHTML(o.id)}">
+            ${["Pending","Confirmed","Preparing","Ready","Completed","Cancelled"].map(s =>
+              `<option ${o.status === s ? "selected" : ""}>${s}</option>`
+            ).join("")}
+          </select>
+          <button class="btn btn-small" onclick="changeOrderStatus('${escapeHTML(o.id)}')">Update</button>
+          <button class="btn btn-danger btn-small" onclick="deleteOrder('${escapeHTML(o.id)}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function changeOrderStatus(id) {
+  const status = document.getElementById("status-" + id).value;
+
+  const ok = await confirmModal("Update order status to " + status + "?", "Update order");
+  if (!ok) return;
+
+  try {
+    await apiPost({
+      action:"updateOrderStatus",
+      id:id,
+      status:status
+    });
+
+    showMessage("Order status updated. Customer will see the update in chat.", "success");
+    await loadAdminOrders();
+    if (activeAdminChatUserId) loadAdminChatMessages(activeAdminChatUserId);
+
+  } catch (err) {
+    showMessage(err.message, "error");
+  }
+}
+
+async function deleteOrder(id) {
+  const ok = await confirmModal("This order will be permanently removed.", "Delete this order?");
+  if (!ok) return;
+
+  try {
+    await apiPost({
+      action:"deleteOrder",
+      id:id
+    });
+
+    showMessage("Order deleted.", "success");
+    await loadAdminOrders();
+  } catch (err) {
+    showMessage(err.message, "error");
+  }
+}
+
+/************************************************************
+ * ADMIN MENU MANAGEMENT
+ ************************************************************/
+
+function renderManageMenu() {
+  const box = document.getElementById("manageMenuList");
+  if (!box) return;
+
+  if (!menu.length) {
+    box.innerHTML = '<div class="panel empty">No menu items.</div>';
+    return;
+  }
+
+  box.innerHTML = menu.map(x => `
+    <div class="manage-card">
+      <img src="${safeImage(x.image) || "https://placehold.co/100x100/e8f4ed/176b4a?text=Food"}"
+        onerror="this.src='https://placehold.co/100x100/e8f4ed/176b4a?text=Food'">
+      <div class="manage-info">
+        <strong>${escapeHTML(x.name)}</strong>
+        <div class="small muted">${escapeHTML(x.description || "")}</div>
+        <div class="price">${money(x.price)}</div>
+        <div class="small ${x.available === false ? "sold" : "muted"}">
+          ${x.available === false ? "Unavailable" : "Available"}
+        </div>
+      </div>
+      <div class="manage-actions">
+        <button class="btn btn-outline btn-small" onclick="editMenuItem('${escapeHTML(x.id)}')">Edit</button>
+        <button class="btn btn-outline btn-small" onclick="changeMenuPhoto('${escapeHTML(x.id)}')">Change Photo</button>
+        <button class="btn btn-light btn-small" onclick="toggleMenuAvailability('${escapeHTML(x.id)}')">
+          ${x.available === false ? "Available" : "Sold Out"}
+        </button>
+        <button class="btn btn-danger btn-small" onclick="deleteMenuItem('${escapeHTML(x.id)}')">Delete</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function resetMenuForm() {
+  document.getElementById("editMenuId").value = "";
+  document.getElementById("foodName").value = "";
+  document.getElementById("foodPrice").value = "";
+  document.getElementById("foodDescription").value = "";
+  document.getElementById("foodImageFile").value = "";
+  document.getElementById("foodImagePreview").classList.add("hidden");
+  document.getElementById("menuFormTitle").textContent = "Add New Food";
+  document.getElementById("saveMenuBtn").textContent = "Save Food";
+  document.getElementById("cancelEditBtn").classList.add("hidden");
+  editingImageData = "";
+  currentMenuImage = "";
+}
+
+function editMenuItem(id) {
+  const item = menu.find(x => String(x.id) === String(id));
+  if (!item) return;
+
+  document.getElementById("editMenuId").value = item.id;
+  document.getElementById("foodName").value = item.name;
+  document.getElementById("foodPrice").value = item.price;
+  document.getElementById("foodDescription").value = item.description || "";
+  document.getElementById("menuFormTitle").textContent = "Edit Food";
+  document.getElementById("saveMenuBtn").textContent = "Update Food";
+  document.getElementById("cancelEditBtn").classList.remove("hidden");
+
+  currentMenuImage = item.image || "";
+
+  const preview = document.getElementById("foodImagePreview");
+  if (currentMenuImage) {
+    preview.src = currentMenuImage;
+    preview.classList.remove("hidden");
+  } else {
+    preview.classList.add("hidden");
+  }
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function changeMenuPhoto(id) {
+  editMenuItem(id);
+  document.getElementById("foodImageFile").click();
+}
+
+function previewFoodImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    showMessage("Please select an image file.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    editingImageData = reader.result;
+
+    const preview = document.getElementById("foodImagePreview");
+    preview.src = editingImageData;
+    preview.classList.remove("hidden");
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function compressImage(dataUrl, maxSize=1000, quality=.78) {
+  return new Promise((resolve,reject) => {
+    const img = new Image();
+
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+
+      if (w > maxSize || h > maxSize) {
+        const scale = Math.min(maxSize/w,maxSize/h);
+        w = Math.round(w*scale);
+        h = Math.round(h*scale);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+
+      resolve(canvas.toDataURL("image/jpeg",quality));
+    };
+
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+function dataURLtoBlob(dataUrl) {
+  const [header, base64] = dataUrl.split(",");
+  const mime = header.match(/:(.*?);/)[1];
+  const bin = atob(base64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
+async function uploadFoodImage(dataUrl) {
+  const compressed = await compressImage(dataUrl);
+  const blob = dataURLtoBlob(compressed);
+  const path = "menu-" + Date.now() + "-" + Math.random().toString(36).slice(2) + ".jpg";
+
+  const { error: uploadError } = await sb.storage
+    .from("menu-images")
+    .upload(path, blob, { contentType: "image/jpeg", upsert: true });
+
+  if (uploadError) throw new Error(uploadError.message);
+
+  const { data } = sb.storage.from("menu-images").getPublicUrl(path);
+  return data.publicUrl;
+}
+
+async function saveMenuItem(event) {
+  event.preventDefault();
+
+  const btn = document.getElementById("saveMenuBtn");
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+  btn.classList.add("is-loading");
+
+  try {
+    const id = document.getElementById("editMenuId").value;
+    let image = currentMenuImage;
+
+    if (editingImageData) {
+      image = await uploadFoodImage(editingImageData);
+    }
+
+    const data = {
+      name:document.getElementById("foodName").value.trim(),
+      price:Number(document.getElementById("foodPrice").value),
+      description:document.getElementById("foodDescription").value.trim(),
+      image:image
+    };
+
+    if (id) {
+      await apiPost(Object.assign({
+        action:"updateMenu",
+        id:id
+      },data));
+    } else {
+      await apiPost(Object.assign({
+        action:"addMenu"
+      },data));
+    }
+
+    showMessage("Menu item saved successfully.", "success");
+    resetMenuForm();
+    await loadMenu();
+
+  } catch (err) {
+    showMessage(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = document.getElementById("editMenuId").value
+      ? "Update Food"
+      : "Save Food";
+    btn.classList.remove("is-loading");
+  }
+}
+
+async function toggleMenuAvailability(id) {
+  try {
+    await apiPost({
+      action:"toggleMenu",
+      id:id
+    });
+
+    await loadMenu();
+  } catch (err) {
+    showMessage(err.message);
+  }
+}
+
+async function deleteMenuItem(id) {
+  const ok = await confirmModal("This food item will be permanently removed from the menu.", "Delete this item?");
+  if (!ok) return;
+
+  try {
+    await apiPost({
+      action:"deleteMenu",
+      id:id
+    });
+
+    showMessage("Food item deleted.", "success");
+    await loadMenu();
+  } catch (err) {
+    showMessage(err.message, "error");
+  }
+}
+
+/************************************************************
+ * CUSTOMER CHAT SUPPORT
+ ************************************************************/
+
+function toggleCustomerChat(forceOpen) {
+  if (!requireLogin()) return;
+
+  const win = document.getElementById("customerChatWindow");
+  const shouldOpen = forceOpen === true ? true : win.classList.contains("hidden");
+
+  win.classList.toggle("hidden",!shouldOpen);
+  customerChatOpen = shouldOpen;
+
+  if (shouldOpen) {
+    loadCustomerChat();
+    startCustomerChatPolling();
+    document.getElementById("customerMessageInput").focus();
+  }
+}
+
+function stopCustomerChatPolling() {
+  if (customerChatTimer) {
+    clearInterval(customerChatTimer);
+    customerChatTimer = null;
+  }
+}
+
+function startCustomerChatPolling() {
+  stopCustomerChatPolling();
+
+  if (!customerToken) return;
+
+  customerChatTimer = setInterval(() => {
+    if (customerChatOpen && !document.hidden) {
+      loadCustomerChat(true);
+    }
+  },10000);
+}
+
+async function loadCustomerChat(silent=false) {
+  if (!customerToken || customerChatBusy) return;
+
+  customerChatBusy = true;
+
+  try {
+    const data = await apiPost({
+      action:"getMyChat",
+      token:customerToken
+    });
+
+    renderCustomerChatMessages(data.messages || []);
+    renderCustomerOrderTracking(data.orders || []);
+
+    const unread = Number(data.unread || 0);
+    document.getElementById("customerChatAlert")
+      .classList.toggle("hidden",unread <= 0);
+
+    if (customerChatOpen) {
+      await apiPost({
+        action:"markMyChatRead",
+        token:customerToken
+      });
+    }
+
+  } catch (err) {
+    if (!silent) {
+      document.getElementById("customerChatMessages").innerHTML =
+        `<div class="empty">${escapeHTML(err.message)}</div>`;
+    }
+  } finally {
+    customerChatBusy = false;
+  }
+}
+
+function renderCustomerChatMessages(messages) {
+  const box = document.getElementById("customerChatMessages");
+
+  if (!messages.length) {
+    box.innerHTML = `
+      <div class="empty">
+        <strong>Welcome to Canteen Chat Support</strong>
+        <p>Send us your feedback or ask about your order.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const wasAtBottom =
+    box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+
+  box.innerHTML = messages.map(m => {
+    const sender = m.sender === "Customer"
+      ? "customer"
+      : m.sender === "System"
+        ? "system"
+        : "admin";
+
+    return `
+      <div class="chat-message ${sender}">
+        ${escapeHTML(m.message)}
+        <time>${escapeHTML(m.date)}</time>
+      </div>
+    `;
+  }).join("");
+
+  if (wasAtBottom) box.scrollTop = box.scrollHeight;
+}
+
+function renderCustomerOrderTracking(orders) {
+  const box = document.getElementById("customerChatOrder");
+
+  if (!Array.isArray(orders)) orders = [];
+
+  if (!orders.length) {
+    box.textContent = "No active orders yet. Your order updates will appear here.";
+    return;
+  }
+
+  const selectedId = box.dataset.orderId || "";
+  const order = orders.find(o => String(o.id) === selectedId) ||
+    orders.slice().reverse()[0];
+
+  if (!order) return;
+
+  box.innerHTML = `
+    <strong>Order Tracking: ${escapeHTML(order.id)}</strong><br>
+    Status: <span class="status ${escapeHTML(order.status)}">${escapeHTML(order.status)}</span>
+    <br><span class="muted">Total: ${money(order.total)}</span>
+  `;
+}
+
+async function sendCustomerMessage(event) {
+  event.preventDefault();
+
+  if (!requireLogin()) return;
+
+  const input = document.getElementById("customerMessageInput");
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  const orderId =
+    document.getElementById("customerChatOrder").dataset.orderId || "";
+
+  input.disabled = true;
+
+  try {
+    await apiPost({
+      action:"sendChatMessage",
+      token:customerToken,
+      message:message,
+      orderId:orderId
+    });
+
+    input.value = "";
+    await loadCustomerChat();
+
+  } catch (err) {
+    showMessage(err.message);
+  } finally {
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+/************************************************************
+ * ADMIN CHAT INBOX
+ ************************************************************/
+
+function stopAdminChatPolling() {
+  if (adminChatTimer) {
+    clearInterval(adminChatTimer);
+    adminChatTimer = null;
+  }
+}
+
+function startAdminChatPolling() {
+  stopAdminChatPolling();
+
+  if (!isAdmin) return;
+
+  adminChatTimer = setInterval(() => {
+    if (activeAdminTab === "chats" && !document.hidden) {
+      loadAdminChats(true);
+
+      if (activeAdminChatUserId) {
+        loadAdminChatMessages(activeAdminChatUserId,true);
+      }
+    }
+  },10000);
+}
+
+async function loadAdminChats(silent=false) {
+  if (!isAdmin || adminChatBusy) return;
+
+  adminChatBusy = true;
+
+  try {
+    const data = await apiPost({
+      action:"adminGetChats"
+    });
+
+    adminChats = data.chats || [];
+    renderAdminInbox();
+
+    const totalUnread = adminChats.reduce(
+      (sum,x) => sum + Number(x.unread || 0),0
+    );
+
+    const badge = document.getElementById("adminChatBadge");
+    badge.textContent = totalUnread > 99 ? "99+" : totalUnread;
+    badge.classList.toggle("hidden",totalUnread <= 0);
+
+  } catch (err) {
+    if (!silent) {
+      document.getElementById("adminInboxList").innerHTML =
+        `<div class="empty">${escapeHTML(err.message)}</div>`;
+    }
+  } finally {
+    adminChatBusy = false;
+  }
+}
+
+function renderAdminInbox() {
+  const box = document.getElementById("adminInboxList");
+
+  if (!adminChats.length) {
+    box.innerHTML = '<div class="empty">No customer messages yet.</div>';
+    return;
+  }
+
+  box.innerHTML = adminChats.map(c => `
+    <button class="inbox-item ${String(c.userId) === String(activeAdminChatUserId) ? "active" : ""}"
+      onclick="selectAdminChat('${escapeHTML(c.userId)}')">
+      <div class="avatar">${escapeHTML((c.customer || "C").charAt(0).toUpperCase())}</div>
+      <div class="inbox-details">
+        <strong>${escapeHTML(c.customer)}</strong>
+        <p>${escapeHTML(c.lastMessage || "No messages")}</p>
+      </div>
+      ${Number(c.unread) > 0
+        ? `<span class="unread-count">${Number(c.unread)}</span>`
+        : ""}
+    </button>
+  `).join("");
+}
+
+async function selectAdminChat(userId) {
+  activeAdminChatUserId = userId;
+  renderAdminInbox();
+
+  await loadAdminChatMessages(userId);
+  await apiPost({
+    action:"adminMarkChatRead",
+    userId:userId
+  });
+
+  await loadAdminChats(true);
+}
+
+async function loadAdminChatMessages(userId,silent=false) {
+  if (!isAdmin || !userId) return;
+
+  try {
+    const data = await apiPost({
+      action:"adminGetChatMessages",
+      userId:userId
+    });
+
+    if (String(activeAdminChatUserId) !== String(userId)) return;
+
+    document.getElementById("adminChatCustomer").textContent =
+      data.user?.name || "Customer";
+
+    document.getElementById("adminChatPhone").textContent =
+      data.user?.phone || "";
+
+    document.getElementById("adminMessageInput").disabled = false;
+    document.getElementById("adminSendBtn").disabled = false;
+
+    renderAdminChatMessages(data.messages || []);
+    renderAdminCustomerDetails(data.user,data.orders || []);
+
+  } catch (err) {
+    if (!silent) showMessage(err.message);
+  }
+}
+
+function renderAdminChatMessages(messages) {
+  const box = document.getElementById("adminChatMessages");
+
+  if (!messages.length) {
+    box.innerHTML = '<div class="empty">No messages in this conversation.</div>';
+    return;
+  }
+
+  const wasAtBottom =
+    box.scrollHeight - box.scrollTop - box.clientHeight < 100;
+
+  box.innerHTML = messages.map(m => {
+    const type = m.sender === "Customer"
+      ? "customer"
+      : m.sender === "System"
+        ? "system"
+        : "admin";
+
+    return `
+      <div class="chat-message ${type}">
+        ${escapeHTML(m.message)}
+        <time>${escapeHTML(m.date)}</time>
+      </div>
+    `;
+  }).join("");
+
+  if (wasAtBottom) box.scrollTop = box.scrollHeight;
+}
+
+function renderAdminCustomerDetails(user,orders) {
+  const box = document.getElementById("adminCustomerDetails");
+
+  let html = `
+    <h4>Customer Details</h4>
+    <p>
+      <strong>${escapeHTML(user?.name || "")}</strong><br>
+      ${escapeHTML(user?.phone || "")}
+    </p>
+    <hr style="border:0;border-top:1px solid var(--line)">
+    <h4>Order Tracking</h4>
+  `;
+
+  if (!orders.length) {
+    html += '<p class="muted">No orders found.</p>';
+  } else {
+    html += orders.slice().reverse().map(o => `
+      <div class="order-track-mini">
+        <strong>${escapeHTML(o.id)}</strong>
+        <p class="small muted">${escapeHTML(o.date)}</p>
+        <span class="status ${escapeHTML(o.status)}">${escapeHTML(o.status)}</span>
+        <p><strong>${money(o.total)}</strong></p>
+        <p class="small muted">${escapeHTML(o.payment)}</p>
+      </div>
+    `).join("");
+  }
+
+  box.innerHTML = html;
+}
+
+async function adminSendMessage(event) {
+  event.preventDefault();
+
+  if (!activeAdminChatUserId) {
+    showMessage("Select a customer first.");
+    return;
+  }
+
+  const input = document.getElementById("adminMessageInput");
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  input.disabled = true;
+
+  try {
+    await apiPost({
+      action:"adminSendChatMessage",
+      userId:activeAdminChatUserId,
+      message:message
+    });
+
+    input.value = "";
+
+    await loadAdminChatMessages(activeAdminChatUserId);
+    await loadAdminChats(true);
+
+  } catch (err) {
+    showMessage(err.message);
+  } finally {
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+/************************************************************
+ * REALTIME — live updates for orders & chat (replaces polling
+ * where possible; polling stays as a safety net)
+ ************************************************************/
+
+sb.channel("public:orders")
+  .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+    if (isAdmin && activeAdminTab === "orders") loadAdminOrders();
+    if (customerToken && !document.getElementById("page-orders").classList.contains("hidden")) loadMyOrders();
+  })
+  .subscribe();
+
+sb.channel("public:chat_messages")
+  .on("postgres_changes", { event: "*", schema: "public", table: "chat_messages" }, () => {
+    if (customerToken && customerChatOpen) loadCustomerChat(true);
+    if (isAdmin && activeAdminTab === "chats") {
+      loadAdminChats(true);
+      if (activeAdminChatUserId) loadAdminChatMessages(activeAdminChatUserId, true);
+    }
+  })
+  .subscribe();
+
+/************************************************************
+ * INITIALIZATION
+ ************************************************************/
+
+function hideSplash() {
+  const splash = document.getElementById("splashScreen");
+  if (splash) splash.classList.add("hide");
+}
+
+async function initializeApp() {
+  renderMenuSkeleton();
+  updateCartCount();
+  updateNavigation();
+
+  const startedAt = Date.now();
+  await loadMenu();
+
+  const minSplashTime = 550;
+  const elapsed = Date.now() - startedAt;
+  if (elapsed < minSplashTime) {
+    await new Promise(resolve => setTimeout(resolve, minSplashTime - elapsed));
+  }
+  hideSplash();
+
+  if (customerToken && customer) {
+    startCustomerChatPolling();
+    loadCustomerChat(true);
+  }
+
+  if (isAdmin) {
+    showPage("admin");
+  }
+}
+
+document.addEventListener("visibilitychange",() => {
+  if (!document.hidden) {
+    if (customerToken && customerChatOpen) loadCustomerChat(true);
+    if (isAdmin && activeAdminTab === "chats") loadAdminChats(true);
+  }
+});
+
+/* subtle press-position ripple highlight for .btn */
+document.addEventListener("pointerdown", e => {
+  const btn = e.target.closest(".btn");
+  if (!btn) return;
+  const rect = btn.getBoundingClientRect();
+  btn.style.setProperty("--x", ((e.clientX - rect.left) / rect.width * 100) + "%");
+  btn.style.setProperty("--y", ((e.clientY - rect.top) / rect.height * 100) + "%");
+});
+
+initializeApp();
+</script>
+
+</body>
+</html>

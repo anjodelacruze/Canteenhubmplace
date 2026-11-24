@@ -1,2 +1,0 @@
-# Canteenhubmplace
-Online food delivery
