@@ -2785,7 +2785,7 @@ async function initializeApp() {
   // real protection comes from Supabase Auth + the admins table,
   // this query param just keeps it out of casual users' way.
   const urlParams = new URLSearchParams(window.location.search);
-  const wantsStaffAccess = urlParams.get("staff") === "1";
+  const wantsStaffAccess = urlParams.get("admin") === "mplace09";
 
   renderMenuSkeleton();
   updateCartCount();
