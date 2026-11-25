@@ -763,6 +763,7 @@ footer{
   .manage-card{align-items:flex-start;flex-wrap:wrap}
   .manage-actions{width:100%;grid-template-columns:repeat(2,1fr)}
   .manage-actions button{width:100%}
+}
 /* SPLASH ANIMATION */
 .splash-logo{position:relative;width:96px;height:96px;display:grid;place-items:center}
 .splash-mark{width:84px;height:84px;border-radius:26px;font-size:32px;animation:logoIn .8s var(--ease) both,splashPulse 1.8s ease-in-out .8s infinite}
@@ -786,6 +787,17 @@ footer{
 .splash.hide .splash-tag{animation:none;opacity:0;transition:opacity .3s ease}
 .splash.hide .splash-bar{transform:translateY(14px);opacity:0}
 .splash{transition:opacity .7s var(--ease) .15s,visibility .7s var(--ease) .15s}
+
+/* ADMIN CHAT ACCORDION */
+.chat-admin-layout{grid-template-columns:1fr!important;min-height:0;border:0;background:transparent}
+.inbox-list{border:0!important;max-height:none!important;overflow:visible;display:flex;flex-direction:column;gap:10px}
+.inbox-card{border:1.5px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color var(--fast),box-shadow var(--fast)}
+.inbox-card.open{border-color:var(--g);box-shadow:var(--shadow)}
+.inbox-card .inbox-item{border:0;background:transparent}
+.inbox-card.has-unread{border-color:#f3b4b6}
+.inbox-slot .admin-conversation{border-top:1px solid var(--line)}
+.unread-count{animation:unreadPulse 1.6s ease-in-out infinite}
+@keyframes unreadPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}50%{box-shadow:0 0 0 6px rgba(229,72,77,0)}}
 </style>
 </head>
 
@@ -1175,6 +1187,7 @@ let customerChatTimer = null;
 let adminChatTimer = null;
 let customerChatBusy = false;
 let adminChatBusy = false;
+let lastInboxSig = "";
 let editingImageData = "";
 let currentMenuImage = "";
 
@@ -2439,7 +2452,7 @@ function startCustomerChatPolling() {
     if (customerChatOpen && !document.hidden) {
       loadCustomerChat(true);
     }
-  },10000);
+  },3000);
 }
 
 async function loadCustomerChat(silent=false, force=false) {
@@ -2603,7 +2616,7 @@ function startAdminChatPolling() {
         loadAdminChatMessages(activeAdminChatUserId,true);
       }
     }
-  },10000);
+  },3000);
 }
 
 async function loadAdminChats(silent=false) {
@@ -2637,39 +2650,80 @@ async function loadAdminChats(silent=false) {
   }
 }
 
+function stashConvo() {
+  let h = document.getElementById("adminConvoHolder");
+  if (!h) {
+    h = document.createElement("div");
+    h.id = "adminConvoHolder";
+    h.className = "hidden";
+    document.getElementById("adminChatsTab").appendChild(h);
+  }
+  const c = document.querySelector(".admin-conversation");
+  if (c && c.parentElement !== h) h.appendChild(c);
+}
+
 function renderAdminInbox() {
   const box = document.getElementById("adminInboxList");
+
+  const sig = JSON.stringify(adminChats.map(c => [c.userId, c.unread, c.lastMessage])) + "|" + activeAdminChatUserId;
+  if (sig === lastInboxSig) return;
+  lastInboxSig = sig;
+
+  stashConvo();
 
   if (!adminChats.length) {
     box.innerHTML = '<div class="empty">No customer messages yet.</div>';
     return;
   }
 
-  box.innerHTML = adminChats.map(c => `
-    <button class="inbox-item ${String(c.userId) === String(activeAdminChatUserId) ? "active" : ""}"
-      onclick="selectAdminChat('${escapeHTML(c.userId)}')">
-      <div class="avatar">${escapeHTML((c.customer || "C").charAt(0).toUpperCase())}</div>
-      <div class="inbox-details">
-        <strong>${escapeHTML(c.customer)}</strong>
-        <p>${escapeHTML(c.lastMessage || "No messages")}</p>
+  box.innerHTML = adminChats.map(c => {
+    const open = String(c.userId) === String(activeAdminChatUserId);
+    const unread = Number(c.unread) || 0;
+    const showBadge = unread > 0 && !open;
+
+    return `
+      <div class="inbox-card ${open ? "open" : ""} ${showBadge ? "has-unread" : ""}">
+        <button class="inbox-item" onclick="selectAdminChat('${escapeHTML(c.userId)}')">
+          <div class="avatar">${escapeHTML((c.customer || "C").charAt(0).toUpperCase())}</div>
+          <div class="inbox-details">
+            <strong>${escapeHTML(c.customer)}</strong>
+            <p>${escapeHTML(c.lastMessage || "No messages")}</p>
+          </div>
+          ${showBadge ? `<span class="unread-count">${unread}</span>` : ""}
+        </button>
+        <div class="inbox-slot" id="slot-${escapeHTML(c.userId)}"></div>
       </div>
-      ${Number(c.unread) > 0
-        ? `<span class="unread-count">${Number(c.unread)}</span>`
-        : ""}
-    </button>
-  `).join("");
+    `;
+  }).join("");
+
+  if (activeAdminChatUserId) {
+    const slot = document.getElementById("slot-" + activeAdminChatUserId);
+    const convo = document.querySelector(".admin-conversation");
+    if (slot && convo) slot.appendChild(convo);
+  }
 }
 
 async function selectAdminChat(userId) {
+  if (String(activeAdminChatUserId) === String(userId)) {
+    activeAdminChatUserId = "";
+    lastInboxSig = "";
+    renderAdminInbox();
+    try {
+      await apiPost({ action: "adminMarkChatRead", userId: userId });
+      await loadAdminChats(true);
+    } catch (e) {}
+    return;
+  }
+
   activeAdminChatUserId = userId;
+  lastInboxSig = "";
   renderAdminInbox();
 
-  await loadAdminChatMessages(userId);
-  await apiPost({
-    action:"adminMarkChatRead",
-    userId:userId
-  });
+  document.getElementById("adminChatMessages").innerHTML =
+    '<div class="empty">Loading...</div>';
 
+  await loadAdminChatMessages(userId);
+  await apiPost({ action: "adminMarkChatRead", userId: userId });
   await loadAdminChats(true);
 }
 
