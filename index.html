@@ -2442,8 +2442,9 @@ function startCustomerChatPolling() {
   },10000);
 }
 
-async function loadCustomerChat(silent=false) {
-  if (!customerToken || customerChatBusy) return;
+async function loadCustomerChat(silent=false, force=false) {
+  if (!customerToken || (customerChatBusy && !force)) return;
+
 
   customerChatBusy = true;
 
@@ -2547,7 +2548,17 @@ async function sendCustomerMessage(event) {
   const orderId =
     document.getElementById("customerChatOrder").dataset.orderId || "";
 
-  input.disabled = true;
+  input.value = "";
+
+  const box = document.getElementById("customerChatMessages");
+  const empty = box.querySelector(".empty");
+  if (empty) empty.remove();
+
+  const bubble = document.createElement("div");
+  bubble.className = "chat-message customer";
+  bubble.innerHTML = escapeHTML(message) + "<time>Sending...</time>";
+  box.appendChild(bubble);
+  box.scrollTop = box.scrollHeight;
 
   try {
     await apiPost({
@@ -2557,13 +2568,13 @@ async function sendCustomerMessage(event) {
       orderId:orderId
     });
 
-    input.value = "";
-    await loadCustomerChat();
+    await loadCustomerChat(true, true);
 
   } catch (err) {
-    showMessage(err.message);
+    bubble.remove();
+    input.value = message;
+    showMessage(err.message, "error");
   } finally {
-    input.disabled = false;
     input.focus();
   }
 }
