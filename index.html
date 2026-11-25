@@ -770,10 +770,25 @@ footer{
 <body>
 
 <div class="splash" id="splashScreen">
-  <div class="splash-mark">CH</div>
-  <div class="splash-ring"></div>
-  <p id="splashText">Loading the menu...</p>
+  <div class="splash-logo">
+    <div class="splash-glow"></div>
+    <div class="splash-mark">CH</div>
+  </div>
+  <h1 class="splash-title" id="splashTitle" aria-label="Canteen Order Hub Mplace"></h1>
+  <p class="splash-tag">Online Food Ordering</p>
+  <div class="splash-bar"><span></span></div>
 </div>
+<script>
+(function(){
+  const t = document.getElementById("splashTitle");
+  "Canteen Order Hub Mplace".split("").forEach((c,i) => {
+    const s = document.createElement("span");
+    s.textContent = c === " " ? "\u00A0" : c;
+    s.style.animationDelay = (0.6 + i * 0.045) + "s";
+    t.appendChild(s);
+  });
+})();
+</script>
 
 <div id="toastStack" aria-live="polite"></div>
 
@@ -2811,7 +2826,7 @@ async function initializeApp() {
     console.warn("Could not verify admin session:", e);
   }
 
-  const minSplashTime = 550;
+  const minSplashTime = 2400;
   const elapsed = Date.now() - startedAt;
   if (elapsed < minSplashTime) {
     await new Promise(resolve => setTimeout(resolve, minSplashTime - elapsed));
