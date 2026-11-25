@@ -763,7 +763,29 @@ footer{
   .manage-card{align-items:flex-start;flex-wrap:wrap}
   .manage-actions{width:100%;grid-template-columns:repeat(2,1fr)}
   .manage-actions button{width:100%}
-}
+/* SPLASH ANIMATION */
+.splash-logo{position:relative;width:96px;height:96px;display:grid;place-items:center}
+.splash-mark{width:84px;height:84px;border-radius:26px;font-size:32px;animation:logoIn .8s var(--ease) both,splashPulse 1.8s ease-in-out .8s infinite}
+.splash-glow{position:absolute;inset:0;border-radius:30px;border:2px solid rgba(255,255,255,.35);opacity:0;animation:logoRipple 1.8s ease-out .8s infinite}
+@keyframes logoIn{from{opacity:0;transform:scale(.3) rotate(-25deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes logoRipple{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
+.splash-title{margin:0;padding:0 24px;text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:clamp(18px,5.2vw,24px);line-height:1.3;max-width:100%}
+.splash-title .sw{display:inline-block;white-space:nowrap}
+.splash-title .sw span{display:inline-block;opacity:0;transform:translateY(14px);animation:letterIn .5s var(--ease) forwards}
+@keyframes letterIn{to{opacity:1;transform:translateY(0)}}
+.splash-tag{opacity:0;animation:tagIn .6s ease 1.9s forwards}
+@keyframes tagIn{from{opacity:0;transform:translateY(6px)}to{opacity:.9;transform:translateY(0)}}
+.splash-bar{width:140px;height:4px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.2)}
+.splash-bar span{display:block;height:100%;width:0;background:#fff;border-radius:4px;animation:barFill 2s ease .3s forwards}
+@keyframes barFill{to{width:100%}}
+
+/* SPLASH EXIT TRANSITION */
+.splash-logo,.splash-title,.splash-bar{transition:transform .6s var(--ease),opacity .45s ease}
+.splash.hide .splash-logo{transform:scale(1.35) translateY(-8px);opacity:0}
+.splash.hide .splash-title{transform:translateY(-22px);opacity:0}
+.splash.hide .splash-tag{animation:none;opacity:0;transition:opacity .3s ease}
+.splash.hide .splash-bar{transform:translateY(14px);opacity:0}
+.splash{transition:opacity .7s var(--ease) .15s,visibility .7s var(--ease) .15s}
 </style>
 </head>
 
@@ -781,14 +803,22 @@ footer{
 <script>
 (function(){
   const t = document.getElementById("splashTitle");
-  "Canteen Order Hub Mplace".split("").forEach((c,i) => {
-    const s = document.createElement("span");
-    s.textContent = c === " " ? "\u00A0" : c;
-    s.style.animationDelay = (0.6 + i * 0.045) + "s";
-    t.appendChild(s);
+  let i = 0;
+  "Canteen Order Hub Mplace".split(" ").forEach(word => {
+    const w = document.createElement("span");
+    w.className = "sw";
+    word.split("").forEach(c => {
+      const s = document.createElement("span");
+      s.textContent = c;
+      s.style.animationDelay = (0.6 + i++ * 0.05) + "s";
+      w.appendChild(s);
+    });
+    t.appendChild(w);
+    t.appendChild(document.createTextNode(" "));
   });
 })();
 </script>
+
 
 <div id="toastStack" aria-live="polite"></div>
 
