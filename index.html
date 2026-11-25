@@ -790,7 +790,6 @@ footer{
       <button onclick="showPage('account',this)">My Account</button>
       <button onclick="showPage('login',this)" id="loginNav">Login</button>
       <button onclick="showPage('register',this)" id="registerNav">Register</button>
-      <button onclick="showPage('adminLogin',this)">Admin</button>
     </nav>
   </div>
 </header>
@@ -946,13 +945,17 @@ footer{
   <section id="page-adminLogin" class="hidden">
     <div class="panel" style="max-width:430px;margin:auto">
       <h2>Admin Login</h2>
-      <p class="muted small">Enter your administrator PIN.</p>
+      <p class="muted small">Sign in with your administrator email and password.</p>
       <form onsubmit="loginAdmin(event)">
         <div class="form-group">
-          <label>Admin PIN</label>
-          <input class="field" id="adminPinInput" type="password" required>
+          <label>Admin Email</label>
+          <input class="field" id="adminEmailInput" type="email" required autocomplete="username">
         </div>
-        <button class="btn" type="submit">Login as Admin</button>
+        <div class="form-group">
+          <label>Password</label>
+          <input class="field" id="adminPasswordInput" type="password" required autocomplete="current-password">
+        </div>
+        <button class="btn" id="adminLoginBtn" type="submit">Login as Admin</button>
       </form>
     </div>
   </section>
@@ -1116,8 +1119,7 @@ let menu = [];
 let cart = JSON.parse(localStorage.getItem("canteen_cart") || "[]");
 let customer = JSON.parse(localStorage.getItem("canteen_customer_user") || "null");
 let customerToken = sessionStorage.getItem("canteen_customer_token") || "";
-let isAdmin = sessionStorage.getItem("canteen_admin") === "yes";
-let adminPin = isAdmin ? (sessionStorage.getItem("canteen_admin_pin") || "") : "";
+let isAdmin = false; // resolved from the real Supabase Auth session on load, see initializeApp()
 let orders = [];
 let activeCategory = "all";
 let activeAdminTab = "orders";
@@ -1134,6 +1136,8 @@ let currentMenuImage = "";
 /************************************************************
  * API HELPERS — same shape as before (apiGet/apiPost), now
  * backed by Supabase instead of Google Sheets/Apps Script.
+ * Admin calls no longer send a PIN — the server checks the
+ * signed-in Supabase Auth session against the admins table.
  ************************************************************/
 
 async function apiGet(type) {
@@ -1158,7 +1162,7 @@ async function apiGet(type) {
   }
 
   if (type === "orders") {
-    const { data, error } = await sb.rpc("admin_get_orders", { p_pin: adminPin });
+    const { data, error } = await sb.rpc("admin_get_orders");
     if (error) throw new Error(error.message);
     return data;
   }
@@ -1232,21 +1236,21 @@ async function apiPost(data) {
 
     case "updateOrderStatus": {
       const { error } = await sb.rpc("admin_update_order_status", {
-        p_pin: adminPin, p_order_id: data.id, p_status: data.status
+        p_order_id: data.id, p_status: data.status
       });
       if (error) throw new Error(error.message);
       return {};
     }
 
     case "deleteOrder": {
-      const { error } = await sb.rpc("admin_delete_order", { p_pin: adminPin, p_order_id: data.id });
+      const { error } = await sb.rpc("admin_delete_order", { p_order_id: data.id });
       if (error) throw new Error(error.message);
       return {};
     }
 
     case "addMenu": {
       const { data: result, error } = await sb.rpc("admin_add_menu_item", {
-        p_pin: adminPin, p_canteen: data.description, p_name: data.name,
+        p_canteen: data.description, p_name: data.name,
         p_price: data.price, p_image_url: data.image || ""
       });
       if (error) throw new Error(error.message);
@@ -1255,7 +1259,7 @@ async function apiPost(data) {
 
     case "updateMenu": {
       const { error } = await sb.rpc("admin_update_menu_item", {
-        p_pin: adminPin, p_id: data.id, p_canteen: data.description, p_name: data.name,
+        p_id: data.id, p_canteen: data.description, p_name: data.name,
         p_price: data.price, p_image_url: data.image || ""
       });
       if (error) throw new Error(error.message);
@@ -1263,40 +1267,40 @@ async function apiPost(data) {
     }
 
     case "toggleMenu": {
-      const { error } = await sb.rpc("admin_toggle_menu_item", { p_pin: adminPin, p_id: data.id });
+      const { error } = await sb.rpc("admin_toggle_menu_item", { p_id: data.id });
       if (error) throw new Error(error.message);
       return {};
     }
 
     case "deleteMenu": {
-      const { error } = await sb.rpc("admin_delete_menu_item", { p_pin: adminPin, p_id: data.id });
+      const { error } = await sb.rpc("admin_delete_menu_item", { p_id: data.id });
       if (error) throw new Error(error.message);
       return {};
     }
 
     case "adminGetChats": {
-      const { data: result, error } = await sb.rpc("admin_get_chats", { p_pin: adminPin });
+      const { data: result, error } = await sb.rpc("admin_get_chats");
       if (error) throw new Error(error.message);
       return result;
     }
 
     case "adminGetChatMessages": {
       const { data: result, error } = await sb.rpc("admin_get_chat_messages", {
-        p_pin: adminPin, p_customer_id: data.userId
+        p_customer_id: data.userId
       });
       if (error) throw new Error(error.message);
       return result;
     }
 
     case "adminMarkChatRead": {
-      const { error } = await sb.rpc("admin_mark_chat_read", { p_pin: adminPin, p_customer_id: data.userId });
+      const { error } = await sb.rpc("admin_mark_chat_read", { p_customer_id: data.userId });
       if (error) throw new Error(error.message);
       return {};
     }
 
     case "adminSendChatMessage": {
       const { error } = await sb.rpc("admin_send_message", {
-        p_pin: adminPin, p_customer_id: data.userId, p_message: data.message
+        p_customer_id: data.userId, p_message: data.message
       });
       if (error) throw new Error(error.message);
       return {};
@@ -1908,40 +1912,54 @@ function openChatForOrder(orderId) {
 
 /************************************************************
  * ADMIN AUTH AND DASHBOARD
+ * Admin access now uses real Supabase Auth (email + password)
+ * instead of a shared PIN. After signing in, the server-side
+ * is_admin() check confirms the account is actually listed in
+ * the admins table before the dashboard is shown.
  ************************************************************/
 
 async function loginAdmin(event) {
   event.preventDefault();
 
-  const pin = document.getElementById("adminPinInput").value;
+  const btn = document.getElementById("adminLoginBtn");
+  btn.disabled = true;
+  btn.classList.add("is-loading");
 
   try {
-    await apiGet2CheckPin(pin);
-  } catch (e) {
-    showMessage("Incorrect admin PIN.");
-    return;
+    const email = document.getElementById("adminEmailInput").value.trim();
+    const password = document.getElementById("adminPasswordInput").value;
+
+    const { error: authError } = await sb.auth.signInWithPassword({ email, password });
+    if (authError) throw new Error("Incorrect email or password.");
+
+    const { data: adminCheck, error: checkError } = await sb.rpc("is_admin");
+    if (checkError || adminCheck !== true) {
+      await sb.auth.signOut();
+      throw new Error("This account is not authorized as admin.");
+    }
+
+    isAdmin = true;
+    sessionStorage.setItem("canteen_admin", "yes");
+
+    document.getElementById("adminEmailInput").value = "";
+    document.getElementById("adminPasswordInput").value = "";
+
+    showMessage("Welcome, admin.", "success");
+    showPage("admin");
+
+  } catch (err) {
+    showMessage(err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("is-loading");
   }
-
-  adminPin = pin;
-  isAdmin = true;
-
-  sessionStorage.setItem("canteen_admin","yes");
-  sessionStorage.setItem("canteen_admin_pin", pin);
-
-  showPage("admin");
 }
 
-async function apiGet2CheckPin(pin) {
-  const { error } = await sb.rpc("admin_get_orders", { p_pin: pin });
-  if (error) throw new Error(error.message);
-}
+async function logoutAdmin() {
+  await sb.auth.signOut();
 
-function logoutAdmin() {
   isAdmin = false;
-  adminPin = "";
-
   sessionStorage.removeItem("canteen_admin");
-  sessionStorage.removeItem("canteen_admin_pin");
 
   stopAdminChatPolling();
   showPage("home");
@@ -2743,6 +2761,15 @@ sb.channel("public:chat_messages")
   })
   .subscribe();
 
+// Keep the local isAdmin flag in sync if the Supabase session ends
+// in another tab, or expires, etc.
+sb.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    isAdmin = false;
+    sessionStorage.removeItem("canteen_admin");
+  }
+});
+
 /************************************************************
  * INITIALIZATION
  ************************************************************/
@@ -2753,12 +2780,36 @@ function hideSplash() {
 }
 
 async function initializeApp() {
+  // Hidden admin entry point: visit yoursite.com/?staff=1 to reach
+  // the Admin Login page. There's no nav button for it anymore —
+  // real protection comes from Supabase Auth + the admins table,
+  // this query param just keeps it out of casual users' way.
+  const urlParams = new URLSearchParams(window.location.search);
+  const wantsStaffAccess = urlParams.get("staff") === "1";
+
   renderMenuSkeleton();
   updateCartCount();
   updateNavigation();
 
   const startedAt = Date.now();
   await loadMenu();
+
+  // Restore an existing admin session (e.g. after a page refresh)
+  // by checking Supabase Auth directly, never from localStorage/PIN.
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const { data: adminCheck } = await sb.rpc("is_admin");
+      isAdmin = adminCheck === true;
+      if (isAdmin) {
+        sessionStorage.setItem("canteen_admin", "yes");
+      } else {
+        sessionStorage.removeItem("canteen_admin");
+      }
+    }
+  } catch (e) {
+    console.warn("Could not verify admin session:", e);
+  }
 
   const minSplashTime = 550;
   const elapsed = Date.now() - startedAt;
@@ -2774,6 +2825,8 @@ async function initializeApp() {
 
   if (isAdmin) {
     showPage("admin");
+  } else if (wantsStaffAccess) {
+    showPage("adminLogin");
   }
 }
 
