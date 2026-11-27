@@ -841,6 +841,27 @@ footer{
   .item-overlay{align-items:flex-end;padding:0}
   .item-sheet{border-radius:24px 24px 0 0;width:100%}
 }
+/* PLUS BUTTON (opens item sheet) */
+.plus-btn{
+  position:relative;flex-shrink:0;
+  width:36px;height:36px;border:0;border-radius:50%;
+  background:linear-gradient(135deg,var(--g2),var(--g));color:#fff;
+  font-size:22px;font-weight:700;line-height:1;
+  display:grid;place-items:center;padding:0 0 2px;
+  box-shadow:0 6px 14px rgba(15,110,75,.3);
+  transition:transform var(--fast),box-shadow var(--fast);
+}
+.plus-btn:hover{transform:scale(1.1)}
+.plus-btn:active{transform:scale(.92)}
+.plus-badge{
+  position:absolute;top:-6px;right:-6px;
+  min-width:18px;height:18px;padding:0 4px;border-radius:20px;
+  background:var(--red);color:#fff;font-size:10px;font-weight:800;line-height:18px;
+  text-align:center;padding-bottom:0;
+}
+@media(max-width:650px){
+  .food-bottom{flex-direction:row;align-items:center}
+}
 </style>
 </head>
 
@@ -1677,9 +1698,7 @@ function renderMenu() {
             <span class="price">${money(item.price)}</span>
             ${
               available
-                ? `<button class="btn btn-small" onclick="event.stopPropagation();addToCart('${escapeHTML(item.id)}')">
-                    ${inCart ? "Add More" : "Add to Cart"}
-                  </button>`
+                ? `<button class="plus-btn" aria-label="Choose ${escapeHTML(item.name)}">+${inCart ? `<span class="plus-badge">${inCart.qty}</span>` : ""}</button>`
                 : `<span class="sold">Unavailable</span>`
             }
           </div>
