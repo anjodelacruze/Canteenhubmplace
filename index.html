@@ -798,6 +798,49 @@ footer{
 .inbox-slot .admin-conversation{border-top:1px solid var(--line)}
 .unread-count{animation:unreadPulse 1.6s ease-in-out infinite}
 @keyframes unreadPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}50%{box-shadow:0 0 0 6px rgba(229,72,77,0)}}
+
+/* ITEM DETAIL SHEET (Grab-style) */
+.food-card{cursor:pointer}
+.item-overlay{
+  position:fixed;inset:0;z-index:60;
+  background:rgba(12,30,22,.55);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  animation:fadeBg .2s var(--ease);
+}
+.item-sheet{
+  position:relative;background:#fff;width:min(460px,100%);
+  max-height:92dvh;overflow:auto;border-radius:24px;
+  box-shadow:var(--shadow-lg);
+  animation:sheetUp .38s var(--ease);
+}
+@keyframes sheetUp{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:none}}
+.item-img{
+  width:100%;height:min(340px,48dvh);object-fit:cover;display:block;
+  background:#edf2ee;animation:imgZoom .6s var(--ease);
+}
+@keyframes imgZoom{from{transform:scale(1.15)}to{transform:scale(1)}}
+.item-close{
+  position:absolute;top:12px;right:12px;z-index:2;
+  width:36px;height:36px;border:0;border-radius:50%;
+  background:rgba(255,255,255,.92);color:var(--text);font-weight:800;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+}
+.item-body{padding:18px 20px 6px}
+.item-body h2{margin:0 0 4px;font-size:22px}
+.item-price{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--g);margin-top:10px}
+.item-footer{
+  position:sticky;bottom:0;background:#fff;
+  display:flex;align-items:center;gap:14px;
+  padding:14px 20px calc(16px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);
+}
+.item-footer .qty-control button{width:36px;height:36px;font-size:18px}
+.item-footer .qty-control strong{min-width:20px;text-align:center;font-size:16px}
+.item-footer .btn{flex:1;padding:14px}
+@media(max-width:650px){
+  .item-overlay{align-items:flex-end;padding:0}
+  .item-sheet{border-radius:24px 24px 0 0;width:100%}
+}
 </style>
 </head>
 
@@ -1156,6 +1199,27 @@ footer{
     <input class="field" id="customerMessageInput" placeholder="Type your message..." maxlength="1000">
     <button class="btn" type="submit">Send</button>
   </form>
+</div>
+
+<!-- ITEM DETAIL SHEET -->
+<div class="item-overlay hidden" id="itemSheet" onclick="if(event.target===this)closeItem()">
+  <div class="item-sheet">
+    <button class="item-close" onclick="closeItem()" aria-label="Close">✕</button>
+    <img class="item-img" id="itemImg" alt="">
+    <div class="item-body">
+      <h2 id="itemName"></h2>
+      <div class="muted small" id="itemCanteen"></div>
+      <div class="item-price" id="itemPrice"></div>
+    </div>
+    <div class="item-footer">
+      <div class="qty-control">
+        <button type="button" onclick="changeSheetQty(-1)">−</button>
+        <strong id="itemQty">1</strong>
+        <button type="button" onclick="changeSheetQty(1)">+</button>
+      </div>
+      <button class="btn" id="itemAddBtn" onclick="addFromSheet()">Add to cart</button>
+    </div>
+  </div>
 </div>
 
 <footer>
@@ -1601,7 +1665,7 @@ function renderMenu() {
     const inCart = cart.find(x => String(x.id) === String(item.id));
 
     return `
-      <article class="food-card">
+      <article class="food-card" onclick="openItem('${escapeHTML(item.id)}')">
         <img class="food-image"
           src="${image || "https://placehold.co/500x350/e8f4ed/176b4a?text=Canteen+Food"}"
           alt="${escapeHTML(item.name)}"
@@ -1613,7 +1677,7 @@ function renderMenu() {
             <span class="price">${money(item.price)}</span>
             ${
               available
-                ? `<button class="btn btn-small" onclick="addToCart('${escapeHTML(item.id)}')">
+                ? `<button class="btn btn-small" onclick="event.stopPropagation();addToCart('${escapeHTML(item.id)}')">
                     ${inCart ? "Add More" : "Add to Cart"}
                   </button>`
                 : `<span class="sold">Unavailable</span>`
@@ -1646,6 +1710,79 @@ function addToCart(id) {
   saveCart();
   renderMenu();
 }
+
+/************************************************************
+ * ITEM DETAIL SHEET (Grab-style)
+ ************************************************************/
+
+let sheetItem = null, sheetQty = 1;
+const FALLBACK_IMG = "https://placehold.co/600x450/e8f4ed/176b4a?text=Canteen+Food";
+
+function openItem(id) {
+  const item = menu.find(x => String(x.id) === String(id));
+  if (!item) return;
+  sheetItem = item;
+  sheetQty = 1;
+
+  const img = document.getElementById("itemImg");
+  img.onerror = () => { img.src = FALLBACK_IMG; };
+  img.src = safeImage(item.image) || FALLBACK_IMG;
+  document.getElementById("itemName").textContent = item.name;
+  document.getElementById("itemCanteen").textContent = item.description || "Canteen Food";
+  document.getElementById("itemPrice").textContent = money(item.price);
+
+  updateSheetBtn();
+  document.getElementById("itemSheet").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeItem() {
+  document.getElementById("itemSheet").classList.add("hidden");
+  document.body.style.overflow = "";
+  sheetItem = null;
+}
+
+function changeSheetQty(n) {
+  sheetQty = Math.max(1, Math.min(99, sheetQty + n));
+  updateSheetBtn();
+}
+
+function updateSheetBtn() {
+  if (!sheetItem) return;
+  const btn = document.getElementById("itemAddBtn");
+  document.getElementById("itemQty").textContent = sheetQty;
+  if (sheetItem.available === false) {
+    btn.textContent = "Unavailable";
+    btn.disabled = true;
+  } else {
+    btn.disabled = false;
+    btn.textContent = "Add to cart · " + money(sheetItem.price * sheetQty);
+  }
+}
+
+function addFromSheet() {
+  if (!sheetItem || sheetItem.available === false) return;
+  const found = cart.find(x => String(x.id) === String(sheetItem.id));
+  if (found) {
+    found.qty += sheetQty;
+  } else {
+    cart.push({
+      id: sheetItem.id,
+      name: sheetItem.name,
+      price: Number(sheetItem.price),
+      image: sheetItem.image || "",
+      qty: sheetQty
+    });
+  }
+  saveCart();
+  renderMenu();
+  showToast(sheetQty + " × " + sheetItem.name + " added to cart", "success");
+  closeItem();
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !document.getElementById("itemSheet").classList.contains("hidden")) closeItem();
+});
 
 function changeQty(id, amount) {
   const item = cart.find(x => String(x.id) === String(id));
